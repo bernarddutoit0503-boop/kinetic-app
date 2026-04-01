@@ -18,16 +18,13 @@ import { newsData, NewsItem } from './data/news';
 // --- Icons ---
 
 const LogoK = ({ size = 24, className = "" }) => (
-  <svg 
+  <img 
+    src="/assets/brand/logo.png" 
     width={size} 
     height={size} 
-    viewBox="0 0 100 100" 
-    className={className}
-    fill="currentColor"
-  >
-    <path d="M20 10 L50 45 L20 80 L35 90 L75 45 L35 5 Z" />
-    <path d="M50 10 L40 20 L65 45 L40 70 L50 80 L85 45 Z" />
-  </svg>
+    className={`${className} object-contain`} 
+    alt="Kinetic Logo"
+  />
 );
 
 // --- Types ---
