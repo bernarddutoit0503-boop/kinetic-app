@@ -587,10 +587,16 @@ const HubView = () => (
           Bungie's premier extraction shooter returns. A high-stakes sci-fi experience reimagined for the 2026 competitive landscape.
         </p>
         <div className="flex gap-4">
-          <button className="px-8 py-3 bg-primary text-on-primary font-label font-bold rounded-full hover:opacity-90 active:scale-95 transition-all">
+          <button 
+            onClick={() => window.open('https://www.bungie.net/7/en/Direct/Marathon', '_blank')}
+            className="px-8 py-3 bg-primary text-on-primary font-label font-bold rounded-full hover:opacity-90 active:scale-95 transition-all neon-glow"
+          >
             PRE-ORDER NOW
           </button>
-          <button className="px-8 py-3 bg-surface text-on-surface font-label font-bold rounded-full border border-outline-variant/30 backdrop-blur-md hover:bg-surface-bright transition-all">
+          <button 
+            onClick={() => window.open('https://www.youtube.com/watch?v=DrP_fB70oJ4', '_blank')}
+            className="px-8 py-3 bg-surface text-on-surface font-label font-bold rounded-full border border-outline-variant/30 backdrop-blur-md hover:bg-surface-bright transition-all"
+          >
             VIEW DETAILS
           </button>
         </div>
@@ -605,7 +611,10 @@ const HubView = () => (
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div className="md:col-span-8 group cursor-pointer">
+      <div 
+        onClick={() => window.open('https://www.ign.com/articles/the-most-anticipated-games-of-2024-and-beyond', '_blank')}
+        className="md:col-span-8 group cursor-pointer"
+      >
         <div className="h-full bg-surface rounded-xl overflow-hidden border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
           <div className="relative h-64 md:h-full flex flex-col">
             <img 
@@ -633,7 +642,10 @@ const HubView = () => (
       </div>
 
       <div className="md:col-span-4 flex flex-col gap-6">
-        <div className="bg-surface-variant rounded-xl p-6 border border-outline-variant/10 hover:bg-surface transition-all group cursor-pointer">
+        <div 
+          onClick={() => window.open('https://shmup.com/pixel-rush-preview', '_blank')}
+          className="bg-surface-variant rounded-xl p-6 border border-outline-variant/10 hover:bg-surface transition-all group cursor-pointer"
+        >
           <div className="flex gap-4 items-start mb-4">
             <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-outline-variant/20">
               <img 
