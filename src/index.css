@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@400;700;900&display=swap');
+
+@theme {
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Newsreader", serif;
+  --font-label: "Inter", sans-serif;
+
+  --color-primary: #A3FF78;
+  --color-on-primary: #003914;
+  --color-secondary: #00cffc;
+  --color-on-secondary: #004050;
+  --color-tertiary: #ac89ff;
+  --color-background: #0a0e14;
+  --color-surface: #151a21;
+  --color-surface-bright: #262c36;
+  --color-surface-variant: #20262f;
+  --color-on-surface: #f1f3fc;
+  --color-on-surface-variant: #a8abb3;
+  --color-outline: #72757d;
+  --color-outline-variant: #44484f;
+  --color-error: #ff7351;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-body selection:bg-primary/30;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface/60 backdrop-blur-xl;
+  }
+  
+  .neon-pulse {
+    box-shadow: 0 0 15px rgba(163, 255, 120, 0.2);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 15px rgba(163, 255, 120, 0.4);
+  }
+
+  .tonal-shift {
+    background: linear-gradient(to top, rgba(163, 255, 120, 0.05), transparent);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
