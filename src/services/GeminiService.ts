@@ -97,3 +97,50 @@ export async function getLiveNews() {
     return null;
   }
 }
+
+/**
+ * Fetches the current live-service event status for specific target games.
+ */
+export async function getLiveServiceEvents() {
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: `You are the core intelligence for Kinetic. 
+      
+      TASK: Determine the CURRENT, ACTIVE in-game events for two live-service games: Destiny 2 and Phasmophobia.
+      Use Google Search to specifically look at Bungie.net and Kineticgames.co.uk to find the absolute latest intel.
+      
+      OUTPUT FORMAT:
+      Return a JSON object with this exact structure:
+      {
+        "destiny2": {
+          "event_name": "The actual name of the current event/episode (e.g., Guardian Games 2026, Episode: Revenant)",
+          "description": "A punchy 1-2 sentence description of the event focused on the player benefit/activity."
+        },
+        "phasmophobia": {
+          "event_name": "The actual name of the current event/update (e.g., Cursed Hollow, Blood Moon, Winter Update)",
+          "subtitle": "A short 2-3 word subtitle (e.g., Seasonal Event, Major Update, Live Now)"
+        }
+      }
+      
+      CRITICAL: Only return the JSON object starting with '{' and ending with '}'. No formatting.`,
+      config: {
+        tools: [{ googleSearch: {} }],
+      }
+    });
+
+    const text = response.text;
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}') + 1;
+    
+    if (jsonStart === -1 || jsonEnd === -1) {
+      throw new Error("Could not find JSON object in model response.");
+    }
+    
+    const parsed = JSON.parse(text.substring(jsonStart, jsonEnd));
+    return parsed;
+  } catch (error) {
+    console.error("Live Events Fetch Error:", error);
+    return null;
+  }
+}

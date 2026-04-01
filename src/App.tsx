@@ -12,7 +12,7 @@ import {
   TrendingDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { summarizeArticle, getKineticInsights, getLiveNews } from './services/GeminiService';
+import { summarizeArticle, getKineticInsights, getLiveNews, getLiveServiceEvents } from './services/GeminiService';
 import { newsData, NewsItem } from './data/news';
 
 // --- Icons ---
@@ -559,7 +559,45 @@ const GearView = () => {
   );
 };
 
-const HubView = () => (
+const HubView = () => {
+  const [liveEvents, setLiveEvents] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      const CACHE_KEY = 'kinetic_live_events';
+      const TIMESTAMP_KEY = 'kinetic_events_fetch';
+      const SIXTY_MINUTES = 60 * 60 * 1000;
+
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const lastFetch = localStorage.getItem(TIMESTAMP_KEY);
+      const currentTime = Date.now();
+
+      if (cachedData && lastFetch && (currentTime - parseInt(lastFetch)) < SIXTY_MINUTES) {
+        setLiveEvents(JSON.parse(cachedData));
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const events = await getLiveServiceEvents();
+      
+      if (events) {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(events));
+        localStorage.setItem(TIMESTAMP_KEY, currentTime.toString());
+        setLiveEvents(events);
+      }
+      setLoading(false);
+    }
+    fetchEvents();
+  }, []);
+
+  const d2Title = liveEvents?.destiny2?.event_name ? `DESTINY 2 : ${liveEvents.destiny2.event_name}` : "DESTINY 2 : GUARDIAN GAMES";
+  const d2Desc = liveEvents?.destiny2?.description || "Represent your class in the ultimate competition. Hoverboards, new rewards, and glory await in Guardian Games 2026.";
+  const phasmoTitle = liveEvents?.phasmophobia?.event_name ? `PHASMOPHOBIA : ${liveEvents.phasmophobia.event_name.toUpperCase()}` : "PHASMOPHOBIA : CURSED HOLLOW";
+  const phasmoSub = liveEvents?.phasmophobia?.subtitle || "Spooky Season";
+
+  return (
   <motion.div 
     initial={{ opacity: 0, y: 50 }}
     animate={{ opacity: 1, y: 0 }}
@@ -576,15 +614,17 @@ const HubView = () => (
       />
       <div className="absolute bottom-0 left-0 p-8 z-20 max-w-2xl">
         <div className="flex items-center gap-3 mb-4">
-          <span className="px-3 py-1 bg-secondary text-on-secondary font-label text-[10px] uppercase tracking-widest font-bold rounded-full">LIVE SERVICE PULSE</span>
+          <span className="px-3 py-1 bg-secondary text-on-secondary font-label text-[10px] uppercase tracking-widest font-bold rounded-full">
+            {loading ? "SCANNING PULSE..." : "LIVE SERVICE PULSE"}
+          </span>
           <div className="flex items-center text-primary">
             <TrendingUp size={14} fill="currentColor" />
             <span className="font-headline font-bold ml-1">TOP TRENDING</span>
           </div>
         </div>
-        <h2 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-4 uppercase leading-none italic">DESTINY 2 : GUARDIAN GAMES</h2>
+        <h2 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-4 uppercase leading-none italic">{d2Title}</h2>
         <p className="text-on-surface-variant text-lg md:text-xl font-body mb-8 max-w-lg leading-relaxed">
-          Represent your class in the ultimate competition. Hoverboards, new rewards, and glory await in Guardian Games 2026.
+          {d2Desc}
         </p>
         <div className="flex gap-4">
           <button 
@@ -627,9 +667,9 @@ const HubView = () => (
             <div className="mt-auto p-8 relative z-10">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
-                <span className="font-label text-[10px] text-secondary uppercase tracking-widest font-black">Spooky Season</span>
+                <span className="font-label text-[10px] text-secondary uppercase tracking-widest font-black">{phasmoSub}</span>
               </div>
-              <h4 className="font-headline text-4xl font-bold text-on-surface uppercase italic mb-2 tracking-tighter">PHASMOPHOBIA : BLOOD MOON</h4>
+              <h4 className="font-headline text-4xl font-bold text-on-surface uppercase italic mb-2 tracking-tighter">{phasmoTitle}</h4>
               <div className="flex items-center gap-6">
                 <div className="flex items-baseline gap-1">
                   <span className="font-headline text-2xl font-black text-secondary">EVENT</span>
@@ -671,7 +711,8 @@ const HubView = () => (
       </div>
     </div>
   </motion.div>
-);
+  );
+};
 
 // --- Main App ---
 
