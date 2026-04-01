@@ -55,7 +55,7 @@ export async function getLiveNews() {
       
       TASK:
       1. Gather the top 5 most impactful tech and gaming news headlines from today (April 1st, 2026).
-      2. TARGET SOURCES: The Verge, TechCrunch, IGN, Polygon, Reuters (Tech), and Bloomberg (Tech).
+      2. TARGET SOURCES: Bungie.net (for Destiny 2 updates), Kineticgames.co.uk (for Phasmophobia updates), The Verge, TechCrunch, IGN, Polygon.
       3. APRIL FOOLS FILTER: Today is April 1st. You MUST detect and DISCARD any satirical, prank, or "April Fools" stories. Only return real, verified news.
       
       OUTPUT FORMAT:

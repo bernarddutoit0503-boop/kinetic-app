@@ -612,7 +612,7 @@ const HubView = () => (
 
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div 
-        onClick={() => window.open('https://www.ign.com/articles/the-most-anticipated-games-of-2024-and-beyond', '_blank')}
+        onClick={() => window.open('https://kineticgames.co.uk/', '_blank')}
         className="md:col-span-8 group cursor-pointer"
       >
         <div className="h-full bg-surface rounded-xl overflow-hidden border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
