@@ -570,34 +570,34 @@ const HubView = () => (
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10"></div>
       <img 
         className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" 
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJD6cQE2s583bP1tShzH4Q4gqXevXxuUwLsrLDZ9KI2MZko33H7_jb9Pq0Ne6eSe_D-SI1fXxAQJjVVxmqRnWCdI5rUEqVFeXq_npplNyVQoLM0XFz8D9a6ljQz6n0-zCj3H__V9CNp6I5qE9NZgSfvvi9_VjnCNCPbXSRwXT0GznDNuDqNEhDqRJmafn67mDaHmGY3O-tl_m4HDjcKa5XA8EoUP1c4oWAPiw7fKAtlwmK8CayRJ8TTVx8wh7HEiC1awJrV_gyyg" 
-        alt="Marathon"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjsznI8JaLB9Uu9_AEjSM4jnflbvambXF9NKzvpx7mTcEFn2qJ_yzNd0q_wsnD6DlkPs1138AfUnVIngJyGxd3IEVhFj9gutQwsvx3THCrurnyr9bznTvqJcDQsVvOfVxjqlmHEE8JWzKe3hqmF3uZj4EeOB99OAvU0WwVTYy_JVCHnMxqeXbirCFM9LWjuL8ccHL3dcqJFt-ph3_UuaLyE_5g5XI-hBwTd9x6YWQZ5aq2pOtddv9AquZ8chX44QkqSVDpc-nstg" 
+        alt="Destiny 2"
         referrerPolicy="no-referrer"
       />
       <div className="absolute bottom-0 left-0 p-8 z-20 max-w-2xl">
         <div className="flex items-center gap-3 mb-4">
-          <span className="px-3 py-1 bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest font-bold rounded-full">New Release</span>
+          <span className="px-3 py-1 bg-secondary text-on-secondary font-label text-[10px] uppercase tracking-widest font-bold rounded-full">LIVE SERVICE PULSE</span>
           <div className="flex items-center text-primary">
             <TrendingUp size={14} fill="currentColor" />
-            <span className="font-headline font-bold ml-1">9.8/10</span>
+            <span className="font-headline font-bold ml-1">TOP TRENDING</span>
           </div>
         </div>
-        <h2 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-4 uppercase leading-none italic">MARATHON</h2>
+        <h2 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-4 uppercase leading-none italic">DESTINY 2 : GUARDIAN GAMES</h2>
         <p className="text-on-surface-variant text-lg md:text-xl font-body mb-8 max-w-lg leading-relaxed">
-          Bungie's premier extraction shooter returns. A high-stakes sci-fi experience reimagined for the 2026 competitive landscape.
+          Represent your class in the ultimate competition. Hoverboards, new rewards, and glory await in Guardian Games 2026.
         </p>
         <div className="flex gap-4">
           <button 
-            onClick={() => window.open('https://www.bungie.net/7/en/Direct/Marathon', '_blank')}
+            onClick={() => window.open('https://www.bungie.net/7/en/Destiny/GuardianGames', '_blank')}
             className="px-8 py-3 bg-primary text-on-primary font-label font-bold rounded-full hover:opacity-90 active:scale-95 transition-all neon-glow"
           >
-            PRE-ORDER NOW
+            PLAY NOW
           </button>
           <button 
-            onClick={() => window.open('https://www.youtube.com/watch?v=DrP_fB70oJ4', '_blank')}
+            onClick={() => window.open('https://www.youtube.com/@DestinyTheGame', '_blank')}
             className="px-8 py-3 bg-surface text-on-surface font-label font-bold rounded-full border border-outline-variant/30 backdrop-blur-md hover:bg-surface-bright transition-all"
           >
-            VIEW DETAILS
+            VIEW INTEL
           </button>
         </div>
       </div>
@@ -626,14 +626,14 @@ const HubView = () => (
             <div className="absolute inset-0 bg-gradient-to-t from-surface-variant via-transparent to-transparent"></div>
             <div className="mt-auto p-8 relative z-10">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                <span className="font-label text-[10px] text-primary uppercase tracking-widest font-black">Editor's Choice</span>
+                <span className="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+                <span className="font-label text-[10px] text-secondary uppercase tracking-widest font-black">Spooky Season</span>
               </div>
-              <h4 className="font-headline text-4xl font-bold text-on-surface uppercase italic mb-2 tracking-tighter">ASTRA : BEYOND</h4>
+              <h4 className="font-headline text-4xl font-bold text-on-surface uppercase italic mb-2 tracking-tighter">PHASMOPHOBIA : BLOOD MOON</h4>
               <div className="flex items-center gap-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="font-headline text-2xl font-black text-secondary">9.5</span>
-                  <span className="font-label text-xs text-on-surface-variant uppercase">/ 10 Rating</span>
+                  <span className="font-headline text-2xl font-black text-secondary">EVENT</span>
+                  <span className="font-label text-xs text-on-surface-variant uppercase tracking-widest">Live Now</span>
                 </div>
               </div>
             </div>
