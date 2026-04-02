@@ -26,8 +26,8 @@ export const newsData: NewsItem[] = [
     category: 'TECH',
     title: 'Invincible Season 4 Episode 5 Breaks Records',
     summary: 'The highly anticipated episode 5 of Invincible Season 4 has dropped, changing the entire trajectory of the animated superhero epic. Mark\'s journey takes a dark turn.',
-    original_url: 'https://www.primevideo.com/detail/Invincible/0KWWZEIEGEIQNMWP2N073S4RMB',
-    image: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?q=80&w=2070&auto=format&fit=crop',
+    original_url: 'https://www.ign.com/articles/invincible-season-4-episode-5-give-us-a-moment-review',
+    image: 'https://static.wikia.nocookie.net/amazon-invincible/images/1/13/Mark_Grayson_%28Invincible%29.png',
     featured: true,
     live: true,
     date: 'APR 02'
