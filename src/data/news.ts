@@ -22,15 +22,15 @@ export interface NewsItem {
 
 export const newsData: NewsItem[] = [
   {
-    id: 'geopolitical-threats',
-    category: 'AI INTEL',
-    title: 'Geopolitical Threats to Tech Giants',
-    summary: 'Reports indicate that Iran\'s Islamic Revolutionary Guard Corps (IRGC) issued threats to target major U.S. technology and aerospace companies.',
-    original_url: 'https://www.reuters.com/world/middle-east/irans-revolutionary-guards-threaten-retaliation-against-israel-2024-04-01/',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLPIDS1KD-BI9i0U4MqYABkrDW9HUZ7uJgFWp1zeAhQMceJ6-yB_9-oOYrxlrGXTl04wNEpv_qVdomjkq9htMRhuI1I98Juz0J_MgSOK1qw0_ruwmNiQTMsXWG6Vk2NqqfK5s_mPgbRp0UvRetVJkl_mYC6ojrksF1t0rpBrvaUJ_MgERoVBiX7ix4w-GiOjU9wfxwPiUgc6friXIIqZu9VxkMYpP0_eTaALhnVTXIp8UE21XxzKFvwsB2Cfmk1GYh-09zuxQ0Ow',
+    id: 'invincible-s4-e5',
+    category: 'TECH',
+    title: 'Invincible Season 4 Episode 5 Breaks Records',
+    summary: 'The highly anticipated episode 5 of Invincible Season 4 has dropped, changing the entire trajectory of the animated superhero epic. Mark\'s journey takes a dark turn.',
+    original_url: 'https://www.primevideo.com/detail/Invincible/0KWWZEIEGEIQNMWP2N073S4RMB',
+    image: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?q=80&w=2070&auto=format&fit=crop',
     featured: true,
     live: true,
-    date: 'APR 01'
+    date: 'APR 02'
   },
   {
     id: 'razer-huntsman-v3',
