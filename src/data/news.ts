@@ -48,7 +48,7 @@ export const newsData: NewsItem[] = [
     brand: 'Corsair',
     title: 'Corsair Dominator Titanium: Overclocking the Aesthetic',
     summary: 'Precision-engineered for extreme speeds and unparalleled customization.',
-    original_url: 'https://www.corsair.com/us/en/p/memory/cmp32gx5m2b7200c34/dominator-titanium-rgb-32gb-2x16gb-ddr5-7200mt-s-cl34-intel-xmp-memory-kit-black-cmp32gx5m2b7200c34',
+    original_url: 'https://www.corsair.com/s/dominator-titanium',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD1K24Iu6gU11jTk5J8yJqQOj7WTLYx8PIW1ow4x2za17hvJSZ2okE2jzTnUqT64ddMgCXwLXFDba0LCqlkrCWcf-PA-233U5GNgfrNsbexSuKSrfDn_Z4vYwX5nyYmDR5IbC8tbAVPSrXEBPkPblGQN_ilO-I7h2j5uDGie6DtsSKy3cO07fXzUTEm3UqCY8qmZaJ0fB4I_HmhcZxY7tYqYnAfDpIDadK-4Ykgn2UtOmtLj4NmhKzT7m1xCH870QLYvFNEaAVcog',
     readTime: '8 MIN READ'
   },
@@ -58,7 +58,7 @@ export const newsData: NewsItem[] = [
     brand: 'Logitech G',
     title: 'Logitech G Pro X Superlight 2: LIGHTSPEED Performance',
     summary: 'The choice of world-class esports athletes, now lighter and faster than ever.',
-    original_url: 'https://www.logitechg.com/en-us/products/gaming-mice/pro-x-superlight-2-wireless-mouse.910-006628.html',
+    original_url: 'https://www.logitechg.com/en-us/products/gaming-mice/pro-x-superlight-2.html',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA70s5SOTDOT2Zvyeqgmm58tXTnRcuULtMpEMS2Xk_RWzCcZRlu9-mamp6NHOFbXJunuAhLVUuSmlIngIFEFPmNTT_YiaCPf1HovuoEp-hIAumpbWpioVO0XLDGPVYvKsuPrGXWKl5JDXfoDuMF24aaQyDi6RqjtAngnoFiBdb0h18U119T0wsiVs_DpqM4hsY6dV9zyqadaO9ePx75T6xox30g2Es27g-IjzIdWpoYTwmu5PNqPogWfHpP2x_X8iz96QO2cgs4tw'
   },
   {
