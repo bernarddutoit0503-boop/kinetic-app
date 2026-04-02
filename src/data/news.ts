@@ -26,7 +26,7 @@ export const newsData: NewsItem[] = [
     category: 'GAMING',
     title: 'The Isle: Evrima Branch Update',
     summary: 'Apex predators arrive as The Isle\'s Evrima update introduces fearsome new dinosaur models and terrifying survival mechanics.',
-    original_url: 'https://survivetheisle.com/',
+    original_url: 'https://www.theisle-game.com/en/news',
     image: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=2000&auto=format&fit=crop',
     featured: true,
     live: true,
