@@ -22,12 +22,12 @@ export interface NewsItem {
 
 export const newsData: NewsItem[] = [
   {
-    id: 'invincible-s4-e5',
-    category: 'TECH',
-    title: 'Invincible Season 4 Episode 5 Breaks Records',
-    summary: 'The highly anticipated episode 5 of Invincible Season 4 has dropped, changing the entire trajectory of the animated superhero epic. Mark\'s journey takes a dark turn.',
-    original_url: 'https://www.ign.com/articles/invincible-season-4-episode-5-give-us-a-moment-review',
-    image: 'https://static.wikia.nocookie.net/amazon-invincible/images/1/13/Mark_Grayson_%28Invincible%29.png',
+    id: 'the-isle-evrima',
+    category: 'GAMING',
+    title: 'The Isle: Evrima Branch Update',
+    summary: 'Apex predators arrive as The Isle\'s Evrima update introduces fearsome new dinosaur models and terrifying survival mechanics.',
+    original_url: 'https://survivetheisle.com/',
+    image: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=2000&auto=format&fit=crop',
     featured: true,
     live: true,
     date: 'APR 02'

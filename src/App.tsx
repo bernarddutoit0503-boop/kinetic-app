@@ -653,7 +653,7 @@ const HubView = () => {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div 
         onClick={() => window.open('https://kineticgames.co.uk/', '_blank')}
-        className="md:col-span-8 group cursor-pointer"
+        className="md:col-span-12 group cursor-pointer"
       >
         <div className="h-full bg-surface rounded-xl overflow-hidden border border-outline-variant/10 hover:border-primary/30 transition-all duration-300">
           <div className="relative h-64 md:h-full flex flex-col">
@@ -677,35 +677,6 @@ const HubView = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="md:col-span-4 flex flex-col gap-6">
-        <div 
-          onClick={() => window.open('https://shmup.com/pixel-rush-preview', '_blank')}
-          className="bg-surface-variant rounded-xl p-6 border border-outline-variant/10 hover:bg-surface transition-all group cursor-pointer"
-        >
-          <div className="flex gap-4 items-start mb-4">
-            <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-outline-variant/20">
-              <img 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcivuhczCykgO3uudDYtECE8tAGpNo4x0mHKRXOJ8uwdPXTRrrw_rkfNfkDwA3gRq3zV77ES6h4X3iA0G-KYcwBrY9PqqeNhFRQs6_v7FquNtNOxvoJf8aK-8zUHtPq8MS4UDmLU38v_PclXr2hvj5snAwlHI1pddx_C-krMtQZW7yhMwhbO7qqEo_DHaz2kIJqUs1gWEa3C16fKIaEj96UAtaqDcKgdvALFgwbxmOASFPvtPWMAIXB-i-rBSFzmZnpOMGQSbR2A" 
-                alt="Pixel Rush"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <div>
-              <h5 className="font-headline font-bold text-on-surface text-lg leading-tight uppercase tracking-tight">PIXEL RUSH</h5>
-              <p className="font-label text-[10px] text-secondary uppercase tracking-widest mt-1">Retro Platformer</p>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center text-primary">
-              <TrendingUp size={14} fill="currentColor" />
-              <span className="font-headline font-bold ml-1">8.9</span>
-            </div>
-            <span className="font-label text-[10px] text-on-surface-variant uppercase font-bold">Oct 12, 2024</span>
           </div>
         </div>
       </div>
