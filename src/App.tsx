@@ -39,8 +39,27 @@ const LiveInsight = ({ topic }: { topic: string }) => {
 
       useEffect(() => {
         async function fetchInsight() {
+          const CACHE_KEY = `kinetic_insight_${topic}`;
+          const TIMESTAMP_KEY = `kinetic_insight_time_${topic}`;
+          const SIXTY_MINUTES = 60 * 60 * 1000;
+
+          const cached = localStorage.getItem(CACHE_KEY);
+          const lastFetch = localStorage.getItem(TIMESTAMP_KEY);
+          const currentTime = Date.now();
+
+          if (cached && lastFetch && (currentTime - parseInt(lastFetch)) < SIXTY_MINUTES) {
+            setInsight(cached);
+            setLoading(false);
+            return;
+          }
+
           try {
+            setLoading(true);
             const data = await getKineticInsights(topic);
+            if (data && !data.includes('SIGNAL JAMMED') && !data.includes('RECHARGING')) {
+              localStorage.setItem(CACHE_KEY, data);
+              localStorage.setItem(TIMESTAMP_KEY, currentTime.toString());
+            }
             setInsight(data);
           } catch (err) {
             setInsight('SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...');

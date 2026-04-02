@@ -23,7 +23,7 @@ export async function summarizeArticle(title: string, content: string) {
   } catch (error: any) {
     console.error("AI Summary Error:", error);
     if (error?.message?.includes('429')) {
-      return "QUOTA EXHAUSTED: NEURAL LINK RECHARGING (FREE TIER LIMIT REACHED).";
+      return "NEURAL LINK RECHARGING...";
     }
     return "SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...";
   }
@@ -33,8 +33,8 @@ export async function getKineticInsights(topic: string) {
   try {
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
-      contents: `As the Kinetic AI, provide 3 "Accurate News" insights about the current state of ${topic}. 
-      Focus on recent developments and ensure they sound like insider intel. Use a sleek, tech-focused tone.`,
+      contents: `As the Kinetic AI, provide 3 quick, intriguing "Fun Facts" or "Insider Intel" snippets about ${topic}. 
+      Focus on things a hardcore fan or tech enthusiast would find cool. Keep them very punchy and short.`,
       config: {
         tools: [{ googleSearch: {} }] // Enable real-time grounding
       }
@@ -44,7 +44,7 @@ export async function getKineticInsights(topic: string) {
   } catch (error: any) {
     console.error("Kinetic Insights Error:", error);
     if (error?.message?.includes('429')) {
-      return "QUOTA EXHAUSTED: NEURAL LINK RECHARGING (FREE TIER LIMIT REACHED).";
+      return "NEURAL LINK RECHARGING...";
     }
     return "SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...";
   }
