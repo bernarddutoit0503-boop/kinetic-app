@@ -20,7 +20,11 @@ export async function summarizeArticle(title: string, content: string) {
     });
 
     return response.text;
-  } catch (error) {
+  } catch (error: any) {
+    console.error("AI Summary Error:", error);
+    if (error?.message?.includes('429')) {
+      return "QUOTA EXHAUSTED: NEURAL LINK RECHARGING (FREE TIER LIMIT REACHED).";
+    }
     return "SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...";
   }
 }
@@ -37,7 +41,11 @@ export async function getKineticInsights(topic: string) {
     });
 
     return response.text;
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Kinetic Insights Error:", error);
+    if (error?.message?.includes('429')) {
+      return "QUOTA EXHAUSTED: NEURAL LINK RECHARGING (FREE TIER LIMIT REACHED).";
+    }
     return "SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...";
   }
 }
@@ -139,7 +147,7 @@ export async function getLiveServiceEvents() {
     
     const parsed = JSON.parse(text.substring(jsonStart, jsonEnd));
     return parsed;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Live Events Fetch Error:", error);
     return null;
   }
