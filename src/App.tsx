@@ -456,7 +456,7 @@ const GearView = () => {
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
         <img 
           className="w-full h-[500px] object-cover scale-105 group-hover:scale-100 transition-transform duration-700" 
-          src="https://m.media-amazon.com/images/I/71jYyEqd1wL._AC_SL1500_.jpg" 
+          src="/assets/gear/huntsman.jpg" 
           alt="Razer Huntsman V3 Pro"
           referrerPolicy="no-referrer"
         />
