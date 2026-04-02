@@ -456,8 +456,8 @@ const GearView = () => {
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
         <img 
           className="w-full h-[500px] object-cover scale-105 group-hover:scale-100 transition-transform duration-700" 
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuACNHGd0feJTgm2efTvnL6U8jq3MGfoCd6CYMdPKg3IAriTwLbgf0Gxy2yVzRhX_hP1KvqhpxPR8gvdH1wFZC5WNIHwm2ai0npETKjyzJNmJsmPyp-4x11icO5Mrgf0WUu3Ga41FpuK8mqPbZJ_UzHXDRG83YGR4szsCOziOQfrwWHIk4AKZ2X37jTciW0Z73HPt-yRq8yKhuwR_25LaHZhWnPJQ7p45v69iMUZSnbQxKqeB37KDmHS2IzShAAXjdkUhJ8Fjai0HA" 
-          alt="Razer"
+          src="https://m.media-amazon.com/images/I/71jYyEqd1wL._AC_SL1500_.jpg" 
+          alt="Razer Huntsman V3 Pro"
           referrerPolicy="no-referrer"
         />
         <div className="absolute bottom-0 left-0 z-20 p-8 md:p-12 w-full md:w-2/3">
@@ -472,7 +472,10 @@ const GearView = () => {
             Redefining rapid-fire response with adjustable actuation and the world's most advanced optical switches.
           </p>
           <div className="flex flex-wrap gap-4">
-            <button className="bg-primary text-on-primary px-8 py-4 rounded-full font-label font-bold uppercase tracking-widest text-xs active:scale-95 transition-all shadow-lg shadow-primary/20">
+            <button 
+              onClick={() => window.open('https://www.razer.com/gaming-keyboards/razer-huntsman-v3-pro', '_blank')}
+              className="bg-primary text-on-primary px-8 py-4 rounded-full font-label font-bold uppercase tracking-widest text-xs active:scale-95 transition-all shadow-lg shadow-primary/20"
+            >
               Deep Dive Specs
             </button>
             <button className="glass-panel border border-outline-variant/30 text-on-surface px-8 py-4 rounded-full font-label font-bold uppercase tracking-widest text-xs active:scale-95 transition-all">
