@@ -83,14 +83,16 @@ Each object: {"id":"kebab-id","category":"TECH|GAMING|AI INTEL|GEAR","source_bra
 }
 
 /** Live game events — cached 6 hours by useCachedData (events don't change often).
- *  Minimal prompt: just the two games and required JSON shape.
+ *  Covers: Destiny 2, Phasmophobia, The Isle, Rainbow Six Siege, For Honor, Dota 2.
  */
 export async function getLiveServiceEvents(): Promise<LiveEvents | null> {
   try {
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
-      contents: `Return ONLY a JSON object (no markdown) with the current active in-game events for Destiny 2 (check Bungie.net) and Phasmophobia (check Kineticgames.co.uk).
-Format: {"destiny2":{"event_name":"...","description":"1-2 sentences, player benefit focused"},"phasmophobia":{"event_name":"...","subtitle":"2-3 words"}}`,
+      contents: `Return ONLY a JSON object (no markdown) with the current active in-game events for these 6 live-service games. Search each game's official site or Steam news page.
+Games: Destiny 2 (Bungie.net), Phasmophobia (kineticgames.co.uk), The Isle (theisle-game.com), Rainbow Six Siege (ubisoft.com), For Honor (ubisoft.com), Dota 2 (dota2.com).
+Format exactly:
+{"destiny2":{"event_name":"...","description":"1-2 sentences player-benefit focused","subtitle":"2-3 words"},"phasmophobia":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"theisle":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"rainbow6siege":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"forhonor":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"dota2":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"}}`,
       config: {
         tools: [{ googleSearch: {} }],
       },
