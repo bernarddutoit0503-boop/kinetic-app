@@ -1,4 +1,7 @@
-export const CACHE_TTL_MS = 60 * 60 * 1000; // 60 minutes
+export const CACHE_TTL_MS = 60 * 60 * 1000;            // 60 min (default)
+export const CACHE_TTL_NEWS_MS = 30 * 60 * 1000;       // 30 min — live news refreshes more often
+export const CACHE_TTL_EVENTS_MS = 6 * 60 * 60 * 1000; // 6 hr  — game events are stable
+export const CACHE_TTL_INSIGHTS_MS = 4 * 60 * 60 * 1000; // 4 hr — insights don't change fast
 
 export const CACHE_KEYS = {
   LIVE_NEWS: 'kinetic_live_news',
@@ -8,6 +11,8 @@ export const CACHE_KEYS = {
   INSIGHT_PREFIX: 'kinetic_insight_',
   INSIGHT_TIME_PREFIX: 'kinetic_insight_time_',
 } as const;
+
+export const BOOKMARK_KEY = 'kinetic_bookmarks';
 
 export const ERROR_MESSAGES = {
   SIGNAL_JAMMED: 'SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...',

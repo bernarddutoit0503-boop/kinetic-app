@@ -1,18 +1,27 @@
 import { useState } from 'react';
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight, TrendingUp, RotateCcw, Bookmark, BookmarkCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
 import { getLiveNews } from '../../services/GeminiService';
 import { newsData, NewsItem } from '../../data/news';
 import { LiveInsight } from '../LiveInsight';
-import { CACHE_KEYS, FEED_CATEGORIES } from '../../constants';
+import { SkeletonCard, SkeletonFeatured } from '../SkeletonCard';
+import { CACHE_KEYS, FEED_CATEGORIES, CACHE_TTL_NEWS_MS } from '../../constants';
 
-export const FeedView = () => {
+interface FeedViewProps {
+  key?: string | number; // React 19: key must be declared in props interface
+  onArticleClick: (item: NewsItem) => void;
+  isBookmarked: (id: string) => boolean;
+  onBookmarkToggle: (id: string) => void;
+}
+
+export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: FeedViewProps) => {
   const [selectedCategory, setSelectedCategory] = useState('Feed');
-  const { data: liveNews, loading: loadingLive } = useCachedData<NewsItem[]>(
+  const { data: liveNews, loading: loadingLive, refresh } = useCachedData<NewsItem[]>(
     CACHE_KEYS.LIVE_NEWS,
     CACHE_KEYS.LIVE_NEWS_TIME,
-    getLiveNews as () => Promise<NewsItem[] | null>
+    getLiveNews as () => Promise<NewsItem[] | null>,
+    CACHE_TTL_NEWS_MS
   );
 
   const featuredStory = newsData.find(item => item.featured) ?? newsData[0];
@@ -36,40 +45,44 @@ export const FeedView = () => {
     >
       {/* Featured Story */}
       <section className="relative group">
-        <div className="relative h-[480px] w-full rounded-xl overflow-hidden shadow-2xl">
-          <img
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            src={featuredStory.image}
-            alt={featuredStory.title}
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="bg-primary text-on-primary px-3 py-0.5 rounded-full font-label text-[10px] font-black tracking-widest uppercase">
-                {featuredStory.category}
-              </span>
-              <span className="flex items-center gap-1 text-primary font-label text-[10px] font-bold tracking-widest uppercase">
-                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" aria-hidden="true"></span>
-                Live
-              </span>
+        {loadingLive && !featuredStory ? (
+          <SkeletonFeatured />
+        ) : (
+          <div className="relative h-[480px] w-full rounded-xl overflow-hidden shadow-2xl">
+            <img
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              src={featuredStory.image}
+              alt={featuredStory.title}
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 p-6 space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="bg-primary text-on-primary px-3 py-0.5 rounded-full font-label text-[10px] font-black tracking-widest uppercase">
+                  {featuredStory.category}
+                </span>
+                <span className="flex items-center gap-1 text-primary font-label text-[10px] font-bold tracking-widest uppercase">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" aria-hidden="true"></span>
+                  Live
+                </span>
+              </div>
+              <h2 className="font-headline text-4xl font-bold leading-[0.95] tracking-tighter text-on-surface">
+                {featuredStory.title.split(':').map((part, i) => (
+                  <span key={i}>{part}{i === 0 && <br/>}<span className="text-primary italic">{i === 1 && part}</span></span>
+                ))}
+              </h2>
+              <p className="text-on-surface-variant line-clamp-2 font-body text-lg leading-relaxed max-w-[90%]">
+                {featuredStory.summary}
+              </p>
+              <button
+                onClick={() => onArticleClick(featuredStory)}
+                className="bg-primary text-on-primary px-8 py-3 rounded-full font-label font-bold text-sm tracking-wide active:scale-95 transition-all neon-glow hover:scale-105"
+              >
+                READ ARTICLE
+              </button>
             </div>
-            <h2 className="font-headline text-4xl font-bold leading-[0.95] tracking-tighter text-on-surface">
-              {featuredStory.title.split(':').map((part, i) => (
-                <span key={i}>{part}{i === 0 && <br/>}<span className="text-primary italic">{i === 1 && part}</span></span>
-              ))}
-            </h2>
-            <p className="text-on-surface-variant line-clamp-2 font-body text-lg leading-relaxed max-w-[90%]">
-              {featuredStory.summary}
-            </p>
-            <button
-              onClick={() => featuredStory.original_url && window.open(featuredStory.original_url, '_blank', 'noopener,noreferrer')}
-              className="bg-primary text-on-primary px-8 py-3 rounded-full font-label font-bold text-sm tracking-wide active:scale-95 transition-all neon-glow hover:scale-105"
-            >
-              READ ARTICLE
-            </button>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Live AI Pulse */}
@@ -98,18 +111,37 @@ export const FeedView = () => {
 
       {/* Latest Transmissions */}
       <div className="space-y-8">
-        <h3 className="font-headline text-xs font-black tracking-[0.3em] text-primary uppercase border-l-4 border-primary pl-4">
-          LATEST TRANSMISSIONS
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-headline text-xs font-black tracking-[0.3em] text-primary uppercase border-l-4 border-primary pl-4">
+            LATEST TRANSMISSIONS
+          </h3>
+          <button
+            onClick={refresh}
+            aria-label="Refresh live news"
+            disabled={loadingLive}
+            className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"
+          >
+            <RotateCcw size={13} className={loadingLive ? 'animate-spin' : ''} aria-hidden="true" />
+            <span className="font-label text-[9px] uppercase tracking-widest">Refresh</span>
+          </button>
+        </div>
 
+        {/* Live news loading state — show skeletons instead of a single spinner */}
+        {loadingLive && (
+          <div className="space-y-6">
+            {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        )}
+
+        {/* Loading status pill */}
         {loadingLive && (
           <div
-            className="p-4 border border-primary/20 rounded-xl bg-primary/5 animate-pulse flex items-center gap-3"
+            className="p-3 border border-primary/20 rounded-xl bg-primary/5 flex items-center gap-3"
             aria-busy="true"
             aria-label="Loading live news"
           >
-            <TrendingUp size={16} className="text-primary" aria-hidden="true" />
-            <span className="font-label text-[10px] uppercase font-bold text-primary">Gathering Live Grounding Intel...</span>
+            <TrendingUp size={14} className="text-primary shrink-0" aria-hidden="true" />
+            <span className="font-label text-[10px] uppercase font-bold text-primary">Gathering Live Intel...</span>
           </div>
         )}
 
@@ -117,10 +149,10 @@ export const FeedView = () => {
           {filteredNews.map((item) => (
             <div
               key={item.id}
-              onClick={() => item.original_url && window.open(item.original_url, '_blank', 'noopener,noreferrer')}
+              onClick={() => onArticleClick(item)}
               role="article"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && item.original_url && window.open(item.original_url, '_blank', 'noopener,noreferrer')}
+              onKeyDown={(e) => e.key === 'Enter' && onArticleClick(item)}
               aria-label={item.title}
               className={`glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row group cursor-pointer hover:scale-[1.01] transition-all duration-300 active:scale-95 ${item.live ? 'border-l-2 border-primary' : ''}`}
             >
@@ -144,11 +176,15 @@ export const FeedView = () => {
                       <span className="text-on-surface-variant text-[8px] font-label uppercase tracking-widest">{item.source_brand}</span>
                     )}
                   </div>
-                  {item.live ? (
-                    <span className="flex items-center gap-1 text-primary font-label text-[8px] font-bold tracking-widest uppercase">LIVE PULSE</span>
-                  ) : (
-                    item.readTime && <span className="text-on-surface-variant text-[10px] font-label">{item.readTime}</span>
-                  )}
+                  <button
+                    onClick={e => { e.stopPropagation(); onBookmarkToggle(item.id); }}
+                    aria-label={isBookmarked(item.id) ? 'Remove bookmark' : 'Bookmark article'}
+                    className={`transition-colors active:scale-95 ${isBookmarked(item.id) ? 'text-primary' : 'text-outline hover:text-primary'}`}
+                  >
+                    {isBookmarked(item.id)
+                      ? <BookmarkCheck size={15} />
+                      : <Bookmark size={15} />}
+                  </button>
                 </div>
                 <h4 className="font-headline text-xl font-bold leading-tight group-hover:text-primary transition-colors">{item.title}</h4>
                 <p className="text-on-surface-variant font-body text-sm line-clamp-2">

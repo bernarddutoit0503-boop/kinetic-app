@@ -1,7 +1,7 @@
 import { Cpu } from 'lucide-react';
 import { useCachedData } from '../hooks/useCachedData';
 import { getKineticInsights } from '../services/GeminiService';
-import { CACHE_KEYS, ERROR_MESSAGES } from '../constants';
+import { CACHE_KEYS, ERROR_MESSAGES, CACHE_TTL_INSIGHTS_MS } from '../constants';
 
 interface LiveInsightProps {
   topic: string;
@@ -11,7 +11,8 @@ export const LiveInsight = ({ topic }: LiveInsightProps) => {
   const { data: insight, loading } = useCachedData<string>(
     `${CACHE_KEYS.INSIGHT_PREFIX}${topic}`,
     `${CACHE_KEYS.INSIGHT_TIME_PREFIX}${topic}`,
-    () => getKineticInsights(topic)
+    () => getKineticInsights(topic),
+    CACHE_TTL_INSIGHTS_MS
   );
 
   return (

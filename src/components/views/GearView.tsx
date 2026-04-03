@@ -1,17 +1,26 @@
 import { useState } from 'react';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
 import { getLiveNews } from '../../services/GeminiService';
 import { newsData, NewsItem } from '../../data/news';
-import { CACHE_KEYS, GEAR_BRANDS, GAME_URLS } from '../../constants';
+import { SkeletonGearCard } from '../SkeletonCard';
+import { CACHE_KEYS, GEAR_BRANDS, GAME_URLS, CACHE_TTL_NEWS_MS } from '../../constants';
 
-export const GearView = () => {
+interface GearViewProps {
+  key?: string | number; // React 19: key must be declared in props interface
+  onArticleClick: (item: NewsItem) => void;
+  isBookmarked: (id: string) => boolean;
+  onBookmarkToggle: (id: string) => void;
+}
+
+export const GearView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: GearViewProps) => {
   const [selectedBrand, setSelectedBrand] = useState('All Labs');
-  const { data: liveNews } = useCachedData<NewsItem[]>(
+  const { data: liveNews, loading } = useCachedData<NewsItem[]>(
     CACHE_KEYS.LIVE_NEWS,
     CACHE_KEYS.LIVE_NEWS_TIME,
-    getLiveNews as () => Promise<NewsItem[] | null>
+    getLiveNews as () => Promise<NewsItem[] | null>,
+    CACHE_TTL_NEWS_MS
   );
 
   const gearItems = [...(liveNews ?? []), ...newsData].filter(item => item.category === 'GEAR');
@@ -80,41 +89,52 @@ export const GearView = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         <div className="md:col-span-8 space-y-8">
-          {filteredGear.length > 0 ? filteredGear.map((item) => (
-            <article
-              key={item.id}
-              onClick={() => item.original_url && window.open(item.original_url, '_blank', 'noopener,noreferrer')}
-              className="bg-surface rounded-xl overflow-hidden group border border-outline-variant/5 cursor-pointer active:scale-95 transition-all"
-            >
-              <div className="relative aspect-video">
-                <img
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  src={item.image}
-                  alt={item.title}
-                  referrerPolicy="no-referrer"
-                />
-                <span className="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-sm font-label text-[10px] font-extrabold uppercase tracking-widest">
-                  {item.brand || 'Performance Lab'}
-                </span>
-              </div>
-              <div className="p-8">
-                <h2 className="font-headline text-3xl font-bold tracking-tight mb-4 group-hover:text-primary transition-colors">{item.title}</h2>
-                <p className="text-on-surface-variant leading-relaxed mb-6 italic">{item.summary}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="font-label text-xs text-on-surface-variant uppercase tracking-widest">{item.readTime || '5 min read'}</span>
-                    <span className="text-outline" aria-hidden="true">•</span>
-                    <span className="font-label text-xs text-primary uppercase tracking-widest">Tech Report</span>
+          {loading && filteredGear.length === 0
+            ? Array.from({ length: 2 }).map((_, i) => <SkeletonGearCard key={i} />)
+            : filteredGear.length > 0
+              ? filteredGear.map((item) => (
+                <article
+                  key={item.id}
+                  onClick={() => onArticleClick(item)}
+                  className="bg-surface rounded-xl overflow-hidden group border border-outline-variant/5 cursor-pointer active:scale-95 transition-all"
+                >
+                  <div className="relative aspect-video">
+                    <img
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      src={item.image}
+                      alt={item.title}
+                      referrerPolicy="no-referrer"
+                    />
+                    <span className="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-sm font-label text-[10px] font-extrabold uppercase tracking-widest">
+                      {item.brand || 'Performance Lab'}
+                    </span>
                   </div>
-                  <Bookmark size={18} className="text-outline hover:text-primary transition-colors cursor-pointer" aria-label="Bookmark article" />
+                  <div className="p-8">
+                    <h2 className="font-headline text-3xl font-bold tracking-tight mb-4 group-hover:text-primary transition-colors">{item.title}</h2>
+                    <p className="text-on-surface-variant leading-relaxed mb-6 italic">{item.summary}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="font-label text-xs text-on-surface-variant uppercase tracking-widest">{item.readTime || '5 min read'}</span>
+                        <span className="text-outline" aria-hidden="true">•</span>
+                        <span className="font-label text-xs text-primary uppercase tracking-widest">Tech Report</span>
+                      </div>
+                      <button
+                        onClick={e => { e.stopPropagation(); onBookmarkToggle(item.id); }}
+                        aria-label={isBookmarked(item.id) ? 'Remove bookmark' : 'Bookmark article'}
+                        className={`transition-colors active:scale-95 ${isBookmarked(item.id) ? 'text-primary' : 'text-outline hover:text-primary'}`}
+                      >
+                        {isBookmarked(item.id) ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+              : (
+                <div className="text-center py-20 opacity-40">
+                  <p className="font-headline text-xs uppercase tracking-[0.5em]">SECTOR QUIET: NO RECENT INTEL DETECTED.</p>
                 </div>
-              </div>
-            </article>
-          )) : (
-            <div className="text-center py-20 opacity-40">
-              <p className="font-headline text-xs uppercase tracking-[0.5em]">SECTOR QUIET: NO RECENT INTEL DETECTED.</p>
-            </div>
-          )}
+              )
+          }
         </div>
 
         <aside className="md:col-span-4 space-y-8">

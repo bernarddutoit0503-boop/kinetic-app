@@ -10,7 +10,11 @@ const LogoK = ({ size = 24, className = "" }) => (
   />
 );
 
-export const Header = () => (
+interface HeaderProps {
+  onSearchClick: () => void;
+}
+
+export const Header = ({ onSearchClick }: HeaderProps) => (
   <header className="bg-background/80 backdrop-blur-xl border-b border-primary/10 shadow-[0_0_20px_rgba(163,255,120,0.05)] fixed top-0 w-full z-50">
     <div className="flex justify-between items-center px-6 h-16 max-w-7xl mx-auto">
       <div className="flex items-center gap-3">
@@ -25,7 +29,11 @@ export const Header = () => (
         </div>
       </div>
       <h1 className="font-headline tracking-tighter text-2xl font-bold text-primary uppercase italic">KINETIC</h1>
-      <button aria-label="Search" className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200">
+      <button
+        aria-label="Search articles"
+        onClick={onSearchClick}
+        className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200"
+      >
         <Search size={24} aria-hidden="true" />
       </button>
     </div>

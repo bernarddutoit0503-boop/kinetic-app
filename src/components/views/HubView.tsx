@@ -3,13 +3,14 @@ import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
 import { getLiveServiceEvents } from '../../services/GeminiService';
 import { LiveEvents } from '../../types';
-import { CACHE_KEYS, GAME_URLS } from '../../constants';
+import { CACHE_KEYS, GAME_URLS, CACHE_TTL_EVENTS_MS } from '../../constants';
 
 export const HubView = () => {
   const { data: liveEvents, loading } = useCachedData<LiveEvents>(
     CACHE_KEYS.LIVE_EVENTS,
     CACHE_KEYS.LIVE_EVENTS_TIME,
-    getLiveServiceEvents as () => Promise<LiveEvents | null>
+    getLiveServiceEvents as () => Promise<LiveEvents | null>,
+    CACHE_TTL_EVENTS_MS
   );
 
   const d2Title = liveEvents?.destiny2?.event_name
