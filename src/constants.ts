@@ -35,7 +35,7 @@ export const GAME_URLS = {
   FOR_HONOR_STORE: 'https://store.steampowered.com/app/304390/For_Honor/',
   DOTA2: 'https://www.dota2.com/home',
   DOTA2_STORE: 'https://store.steampowered.com/app/570/Dota_2/',
-  RAZER_HUNTSMAN: 'https://www.razer.com/gaming-keyboards/razer-huntsman-v3-pro',
+  RAZER_HUNTSMAN: 'https://www.razer.com/gaming-keyboards/razer-huntsman-v3-pro', // full V3 Pro, not mini
 } as const;
 
 // Static fallback event data used until AI fetch completes or if it fails
