@@ -114,7 +114,7 @@ export const HubView = () => {
     {
       title: 'Phasmophobia',
       event: resolveEvent(liveEvents?.phasmophobia, GAME_EVENT_FALLBACKS.phasmophobia),
-      image: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&auto=format&fit=crop',
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/739630/library_hero.jpg',
       playUrl: GAME_URLS.PHASMOPHOBIA_STORE,
       infoUrl: GAME_URLS.PHASMOPHOBIA,
       loading,
@@ -123,7 +123,7 @@ export const HubView = () => {
     {
       title: 'The Isle',
       event: resolveEvent(liveEvents?.theisle, GAME_EVENT_FALLBACKS.theisle),
-      image: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=800&auto=format&fit=crop',
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/376210/library_hero.jpg',
       playUrl: GAME_URLS.THE_ISLE_STORE,
       infoUrl: GAME_URLS.THE_ISLE,
       loading,
@@ -132,7 +132,7 @@ export const HubView = () => {
     {
       title: 'Rainbow Six Siege',
       event: resolveEvent(liveEvents?.rainbow6siege, GAME_EVENT_FALLBACKS.rainbow6siege),
-      image: 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&auto=format&fit=crop',
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/359550/library_hero.jpg',
       playUrl: GAME_URLS.R6_SIEGE,
       infoUrl: GAME_URLS.R6_SIEGE_ESPORTS,
       loading,
@@ -141,7 +141,7 @@ export const HubView = () => {
     {
       title: 'For Honor',
       event: resolveEvent(liveEvents?.forhonor, GAME_EVENT_FALLBACKS.forhonor),
-      image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&auto=format&fit=crop',
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/304390/library_hero.jpg',
       playUrl: GAME_URLS.FOR_HONOR_STORE,
       infoUrl: GAME_URLS.FOR_HONOR,
       loading,
@@ -150,7 +150,7 @@ export const HubView = () => {
     {
       title: 'Dota 2',
       event: resolveEvent(liveEvents?.dota2, GAME_EVENT_FALLBACKS.dota2),
-      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop',
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg',
       playUrl: GAME_URLS.DOTA2_STORE,
       infoUrl: GAME_URLS.DOTA2,
       loading,
@@ -170,7 +170,7 @@ export const HubView = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent z-10" />
         <img
           className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjsznI8JaLB9Uu9_AEjSM4jnflbvambXF9NKzvpx7mTcEFn2qJ_yzNd0q_wsnD6DlkPs1138AfUnVIngJyGxd3IEVhFj9gutQwsvx3THCrurnyr9bznTvqJcDQsVvOfVxjqlmHEE8JWzKe3hqmF3uZj4EeOB99OAvU0WwVTYy_JVCHnMxqeXbirCFM9LWjuL8ccHL3dcqJFt-ph3_UuaLyE_5g5XI-hBwTd9x6YWQZ5aq2pOtddv9AquZ8chX44QkqSVDpc-nstg"
+          src="https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/library_hero.jpg"
           alt="Destiny 2 live event"
           referrerPolicy="no-referrer"
         />
