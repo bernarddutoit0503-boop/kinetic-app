@@ -8,15 +8,17 @@ import { LiveInsight } from '../LiveInsight';
 import { SkeletonCard, SkeletonFeatured } from '../SkeletonCard';
 import { NewsImage } from '../NewsImage';
 import { CACHE_KEYS, FEED_CATEGORIES, CACHE_TTL_NEWS_MS } from '../../constants';
+import { ToastType } from '../../hooks/useToast';
 
 interface FeedViewProps {
-  key?: string | number; // React 19: key must be declared in props interface
+  key?: string | number;
   onArticleClick: (item: NewsItem) => void;
   isBookmarked: (id: string) => boolean;
   onBookmarkToggle: (id: string) => void;
+  onToast: (message: string, type?: ToastType) => void;
 }
 
-export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: FeedViewProps) => {
+export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToast }: FeedViewProps) => {
   const [selectedCategory, setSelectedCategory] = useState('Feed');
   const { data: liveNews, loading: loadingLive, refresh } = useCachedData<NewsItem[]>(
     CACHE_KEYS.LIVE_NEWS,
@@ -117,7 +119,7 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Fee
             LATEST TRANSMISSIONS
           </h3>
           <button
-            onClick={refresh}
+            onClick={() => { refresh(); onToast('Fetching live intel...', 'info'); }}
             aria-label="Refresh live news"
             disabled={loadingLive}
             className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors disabled:opacity-40"

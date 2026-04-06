@@ -1,4 +1,4 @@
-export type Screen = 'feed' | 'ai' | 'gear' | 'hub';
+export type Screen = 'feed' | 'ai' | 'gear' | 'hub' | 'saved';
 
 export interface GameEvent {
   event_name: string;
