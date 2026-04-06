@@ -5,6 +5,7 @@ import { useCachedData } from '../../hooks/useCachedData';
 import { getLiveNews } from '../../services/GeminiService';
 import { newsData, NewsItem } from '../../data/news';
 import { SkeletonGearCard } from '../SkeletonCard';
+import { NewsImage } from '../NewsImage';
 import { CACHE_KEYS, GEAR_BRANDS, GAME_URLS, CACHE_TTL_NEWS_MS } from '../../constants';
 
 interface GearViewProps {
@@ -99,11 +100,11 @@ export const GearView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Gea
                   className="bg-surface rounded-xl overflow-hidden group border border-outline-variant/5 cursor-pointer active:scale-95 transition-all"
                 >
                   <div className="relative aspect-video">
-                    <img
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    <NewsImage
                       src={item.image}
                       alt={item.title}
-                      referrerPolicy="no-referrer"
+                      category={item.category}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <span className="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-sm font-label text-[10px] font-extrabold uppercase tracking-widest">
                       {item.brand || 'Performance Lab'}

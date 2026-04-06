@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, ExternalLink, Bookmark, BookmarkCheck, Cpu } from 'lucide-react';
 import { motion } from 'motion/react';
 import { summarizeArticle } from '../services/GeminiService';
+import { NewsImage } from './NewsImage';
 import { NewsItem } from '../data/news';
 
 interface ArticleModalProps {
@@ -60,11 +61,11 @@ export const ArticleModal = ({ article, onClose, isBookmarked, onBookmarkToggle 
           {/* Hero image */}
           {article.image && (
             <div className="relative h-52 w-full overflow-hidden shrink-0">
-              <img
-                className="w-full h-full object-cover"
+              <NewsImage
                 src={article.image}
                 alt={article.title}
-                referrerPolicy="no-referrer"
+                category={article.category}
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/20 to-transparent"></div>
             </div>

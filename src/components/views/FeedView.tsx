@@ -6,6 +6,7 @@ import { getLiveNews } from '../../services/GeminiService';
 import { newsData, NewsItem } from '../../data/news';
 import { LiveInsight } from '../LiveInsight';
 import { SkeletonCard, SkeletonFeatured } from '../SkeletonCard';
+import { NewsImage } from '../NewsImage';
 import { CACHE_KEYS, FEED_CATEGORIES, CACHE_TTL_NEWS_MS } from '../../constants';
 
 interface FeedViewProps {
@@ -157,12 +158,12 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Fee
               className={`glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row group cursor-pointer hover:scale-[1.01] transition-all duration-300 active:scale-95 ${item.live ? 'border-l-2 border-primary' : ''}`}
             >
               {item.image && (
-                <div className="md:w-1/3 h-48 md:h-auto overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                <div className="md:w-1/3 h-48 md:h-auto overflow-hidden shrink-0">
+                  <NewsImage
                     src={item.image}
                     alt={item.title}
-                    referrerPolicy="no-referrer"
+                    category={item.category}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
               )}
