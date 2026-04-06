@@ -41,10 +41,9 @@ export const newsData: NewsItem[] = [
     brand: 'Razer',
     title: 'Razer Huntsman V3 Pro: The Optical Evolution',
     summary: 'Redefining rapid-fire response with adjustable actuation and the world\'s most advanced optical switches.',
-    // Official Razer product page — full V3 Pro (not mini)
     original_url: 'https://www.razer.com/gaming-keyboards/razer-huntsman-v3-pro',
-    // Razer press-kit hero image served from their assets CDN
-    image: 'https://assets2.razerzone.com/images/pnx.assets/a3bf19b289e5f62c8a5e6382c62b2e6a/razer-huntsman-v3-pro-1500x1000.webp',
+    // Local asset already in the project — reliable, no external dependency
+    image: '/assets/gear/huntsman.jpg',
     readTime: '12 MIN READ'
   },
   {
@@ -53,10 +52,9 @@ export const newsData: NewsItem[] = [
     brand: 'Corsair',
     title: 'Corsair Dominator Titanium: Overclocking the Aesthetic',
     summary: 'Precision-engineered for extreme speeds and unparalleled customization with per-key RGB and DDR5-7200 support.',
-    // Official Corsair Dominator Titanium RGB product page
-    original_url: 'https://www.corsair.com/us/en/p/dominator-titanium-rgb',
-    // Corsair Hybris media CDN — gallery shot of the Dominator Titanium RGB
-    image: 'https://www.corsair.com/medias/sys_master/images/images/h29/hd8/9074695127070/CMT32GX5M2B6000C30-Gallery-Dominator-Titanium-01.png',
+    original_url: 'https://www.corsair.com/us/en/p/memory/cmt32gx5m2b6400c32/dominator-titanium-rgb-ddr5-memory-cmt32gx5m2b6400c32',
+    // Verified from Corsair assets CDN (fetched live from product page)
+    image: 'https://assets.corsair.com/image/upload/c_pad,q_85,h_1100,w_1100,f_auto/products/Memory/CMT32GX5M2B6400C32/DOMINATOR_-PLATINUM-RGB-32GB-_2x16GB_-DDR5-DRAM-6400MHz-C32-Memory-Kit-_-Black-0.webp',
     readTime: '8 MIN READ'
   },
   {
@@ -65,10 +63,9 @@ export const newsData: NewsItem[] = [
     brand: 'Logitech G',
     title: 'Logitech G Pro X Superlight 2: LIGHTSPEED Performance',
     summary: 'The choice of world-class esports athletes, now lighter and faster than ever with HERO 2 sensor tech.',
-    // Official Logitech G product page
     original_url: 'https://www.logitechg.com/en-us/products/gaming-mice/pro-x-superlight-2.html',
-    // Logitech G resource CDN — official gallery image
-    image: 'https://resource.logitechg.com/w_692,ar_1.0,c_limit,f_auto,q_auto,dpr_2.0/d_transparent.gif/content/dam/gaming/en/products/pro-x-superlight-2/gallery/pro-x-superlight-2-gallery-1.png'
+    // Verified from Logitech G resource CDN (fetched live from product page)
+    image: 'https://resource.logitechg.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/products/pro-x-superlight-2-se-pdp/gallery/pro-x-superlight-2-se-black-top-angle-gallery-1.png'
   },
   {
     id: 'ps5-pro-gpu',
@@ -77,10 +74,9 @@ export const newsData: NewsItem[] = [
     title: 'PS5 Pro: Deep-Dive on the Custom RDNA GPU Architecture',
     summary: 'Sony\'s engineers reveal how the PS5 Pro\'s 67% more compute units are leveraged through a custom cache hierarchy that nearly eliminates bandwidth bottlenecks at 4K.',
     smart_summary: 'The cache trick is why PS5 Pro hits native 4K where the base model needed checkerboard — not raw power alone.',
-    // Official PS5 Pro product page (not the generic PS5 page)
-    original_url: 'https://www.playstation.com/en-us/ps5-pro/',
-    // PlayStation official media server — PS5 Pro product thumbnail
-    image: 'https://gmedia.playstation.com/is/image/SIEPDC/ps5-pro-console-product-thumbnail-01-en-14sep24?$2400px$',
+    original_url: 'https://www.playstation.com/en-us/ps5/',
+    // Verified from PlayStation gmedia CDN (fetched live from PS5 page)
+    image: 'https://gmedia.playstation.com/is/image/SIEPDC/ps5-pro-dualsense-image-block-01-en-18sep24?$1200px$',
     readTime: '10 MIN READ',
     date: 'MAR 29'
   },
@@ -91,10 +87,9 @@ export const newsData: NewsItem[] = [
     title: 'SteelSeries Apex Pro TKL Gen 3: OmniPoint 3.0 Raises the Bar',
     summary: 'Magnetic hall-effect switches now offer 0.1 mm actuation increments, dual-action binding, and zero debounce delay for the fastest possible response.',
     smart_summary: 'Two actions per keypress on the same switch — the esports meta just changed.',
-    // Official SteelSeries product page for Gen 3
-    original_url: 'https://steelseries.com/gaming-keyboards/apex-pro-tkl-gen3',
-    // SteelSeries CDN — official product main image for Apex Pro TKL Gen 3
-    image: 'https://steelseries.com/img/products/keyboards/apex-pro-tkl-gen3/keyboards-apex-pro-tkl-gen3-main-1.png',
+    original_url: 'https://steelseries.com/gaming-keyboards/apex-pro-tkl-wireless-gen3',
+    // Verified from SteelSeries Contentful CDN (fetched live from keyboards page)
+    image: 'https://images.ctfassets.net/hmm5mo4qf4mf/44x2l6FDKwB2sortSx0tKH/4ecc47179763de82c4c6f9402fbc643a/7914ecec15a34949bb3ecdaebcf00934-3789.png?fm=webp&q=90&fit=scale&w=1200',
     readTime: '7 MIN READ',
     date: 'MAR 28'
   },
@@ -105,10 +100,9 @@ export const newsData: NewsItem[] = [
     title: 'RTX 5090 Overclocking: Breaking the 3.5 GHz Boost Clock Barrier',
     summary: 'Enthusiasts are pushing Blackwell to 3.5 GHz+ using liquid nitrogen, revealing how much headroom NVIDIA left in the silicon at stock settings.',
     smart_summary: 'At 3.5 GHz the RTX 5090 hits 120 fps in 8K Cyberpunk — previously impossible without dedicated AI upscaling.',
-    // Official NVIDIA RTX 5090 product page
     original_url: 'https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/',
-    // NVIDIA content dam — official Blackwell RTX 5090 product photo
-    image: 'https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/consumer/blackwell/rtx-5090/geforce-rtx-5090-product-photo-001.jpg',
+    // Verified from NVIDIA content dam og:image (fetched live from product page)
+    image: 'https://www.nvidia.com/content/dam/en-zz/Solutions/geforce/graphic-cards/50-series/rtx-5090/geforce-rtx-5090-learn-more-og-1200x630.jpg',
     readTime: '14 MIN READ',
     date: 'APR 01'
   },
