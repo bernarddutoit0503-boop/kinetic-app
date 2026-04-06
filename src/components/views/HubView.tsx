@@ -1,6 +1,7 @@
 import { TrendingUp, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
+import { useHype } from '../../hooks/useHype';
 import { getLiveServiceEvents } from '../../services/GeminiService';
 import { LiveEvents, GameEvent } from '../../types';
 import { CACHE_KEYS, GAME_URLS, CACHE_TTL_EVENTS_MS, GAME_EVENT_FALLBACKS } from '../../constants';
@@ -19,16 +20,19 @@ function resolveEvent(live: GameEvent | undefined, fallback: { event_name: strin
 
 interface GameCardProps {
   key?: string | number;
+  gameKey: string;
   title: string;
   event: { event_name: string; description: string; subtitle: string };
   image: string;
   playUrl: string;
   infoUrl: string;
   loading: boolean;
+  hypeCount: number;
+  onHype: () => void;
   accent?: 'primary' | 'secondary' | 'tertiary';
 }
 
-const GameCard = ({ title, event, image, playUrl, infoUrl, loading, accent = 'primary' }: GameCardProps) => {
+const GameCard = ({ title, event, image, playUrl, infoUrl, loading, hypeCount, onHype, accent = 'primary' }: GameCardProps) => {
   const accentClass = {
     primary: 'text-primary border-primary',
     secondary: 'text-secondary border-secondary',
@@ -65,6 +69,13 @@ const GameCard = ({ title, event, image, playUrl, infoUrl, loading, accent = 'pr
             {loading ? 'SCANNING...' : event.subtitle}
           </span>
         </div>
+        {/* Hype count badge (shows after first vote) */}
+        {hypeCount > 0 && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 bg-background/70 backdrop-blur-sm px-2 py-0.5 rounded-full">
+            <span className="text-[10px]" aria-hidden="true">🔥</span>
+            <span className="font-label text-[8px] font-black text-on-surface">{hypeCount}</span>
+          </div>
+        )}
       </div>
 
       {/* Body */}
@@ -92,6 +103,14 @@ const GameCard = ({ title, event, image, playUrl, infoUrl, loading, accent = 'pr
           >
             <ExternalLink size={13} />
           </button>
+          {/* Hype button */}
+          <button
+            onClick={onHype}
+            aria-label={`Hype ${title}`}
+            className="px-3 py-2 rounded-lg border border-outline-variant/20 text-sm hover:bg-primary/5 active:scale-90 transition-all"
+          >
+            🔥
+          </button>
         </div>
       </div>
     </div>
@@ -107,56 +126,65 @@ export const HubView = () => {
     getLiveServiceEvents as () => Promise<LiveEvents | null>,
     CACHE_TTL_EVENTS_MS
   );
+  const { addHype, getHype } = useHype();
 
   const d2 = resolveEvent(liveEvents?.destiny2, GAME_EVENT_FALLBACKS.destiny2);
 
-  const games: GameCardProps[] = [
+  const games = [
     {
+      gameKey: 'phasmophobia',
       title: 'Phasmophobia',
       event: resolveEvent(liveEvents?.phasmophobia, GAME_EVENT_FALLBACKS.phasmophobia),
       image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/739630/library_hero.jpg',
       playUrl: GAME_URLS.PHASMOPHOBIA_STORE,
       infoUrl: GAME_URLS.PHASMOPHOBIA,
       loading,
-      accent: 'secondary',
+      accent: 'secondary' as const,
     },
     {
+      gameKey: 'theisle',
       title: 'The Isle',
       event: resolveEvent(liveEvents?.theisle, GAME_EVENT_FALLBACKS.theisle),
       image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/376210/library_hero.jpg',
       playUrl: GAME_URLS.THE_ISLE_STORE,
       infoUrl: GAME_URLS.THE_ISLE,
       loading,
-      accent: 'primary',
+      accent: 'primary' as const,
     },
     {
+      gameKey: 'rainbow6siege',
       title: 'Rainbow Six Siege',
       event: resolveEvent(liveEvents?.rainbow6siege, GAME_EVENT_FALLBACKS.rainbow6siege),
       image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/359550/library_hero.jpg',
       playUrl: GAME_URLS.R6_SIEGE,
       infoUrl: GAME_URLS.R6_SIEGE_ESPORTS,
       loading,
-      accent: 'tertiary',
+      accent: 'tertiary' as const,
     },
     {
+      gameKey: 'forhonor',
       title: 'For Honor',
       event: resolveEvent(liveEvents?.forhonor, GAME_EVENT_FALLBACKS.forhonor),
       image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/304390/library_hero.jpg',
       playUrl: GAME_URLS.FOR_HONOR_STORE,
       infoUrl: GAME_URLS.FOR_HONOR,
       loading,
-      accent: 'secondary',
+      accent: 'secondary' as const,
     },
     {
+      gameKey: 'dota2',
       title: 'Dota 2',
       event: resolveEvent(liveEvents?.dota2, GAME_EVENT_FALLBACKS.dota2),
       image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/570/library_hero.jpg',
       playUrl: GAME_URLS.DOTA2_STORE,
       infoUrl: GAME_URLS.DOTA2,
       loading,
-      accent: 'primary',
+      accent: 'primary' as const,
     },
   ];
+
+  // Most hyped games float to the top
+  const sortedGames = [...games].sort((a, b) => getHype(b.gameKey) - getHype(a.gameKey));
 
   return (
     <motion.div
@@ -190,7 +218,7 @@ export const HubView = () => {
           <p className="text-on-surface-variant text-lg md:text-xl font-body mb-8 max-w-lg leading-relaxed">
             {d2.description}
           </p>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
             <button
               onClick={() => window.open(GAME_URLS.DESTINY2_PLAY, '_blank', 'noopener,noreferrer')}
               className="px-8 py-3 bg-primary text-on-primary font-label font-bold rounded-full hover:opacity-90 active:scale-95 transition-all neon-glow"
@@ -202,6 +230,17 @@ export const HubView = () => {
               className="px-8 py-3 bg-surface text-on-surface font-label font-bold rounded-full border border-outline-variant/30 backdrop-blur-md hover:bg-surface-bright transition-all"
             >
               VIEW INTEL
+            </button>
+            {/* Destiny 2 hype button */}
+            <button
+              onClick={() => addHype('destiny2')}
+              aria-label="Hype Destiny 2"
+              className="px-4 py-3 bg-surface/80 backdrop-blur-md font-label font-bold rounded-full border border-outline-variant/30 hover:bg-surface-bright transition-all active:scale-95 flex items-center gap-2"
+            >
+              <span aria-hidden="true">🔥</span>
+              {getHype('destiny2') > 0 && (
+                <span className="font-label text-[10px] font-black text-on-surface">{getHype('destiny2')}</span>
+              )}
             </button>
           </div>
         </div>
@@ -215,10 +254,15 @@ export const HubView = () => {
         </p>
       </div>
 
-      {/* ── Game grid ── */}
+      {/* ── Game grid (sorted by hype) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        {games.map(game => (
-          <GameCard key={game.title} {...game} />
+        {sortedGames.map(game => (
+          <GameCard
+            key={game.gameKey}
+            {...game}
+            hypeCount={getHype(game.gameKey)}
+            onHype={() => addHype(game.gameKey)}
+          />
         ))}
       </div>
 

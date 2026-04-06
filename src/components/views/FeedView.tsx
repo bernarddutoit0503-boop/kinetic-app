@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ArrowRight, TrendingUp, RotateCcw, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ArrowRight, TrendingUp, RotateCcw, Bookmark, BookmarkCheck, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
+import { useReadHistory } from '../../hooks/useReadHistory';
 import { getLiveNews } from '../../services/GeminiService';
 import { newsData, NewsItem } from '../../data/news';
 import { LiveInsight } from '../LiveInsight';
@@ -26,18 +27,42 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
     getLiveNews as () => Promise<NewsItem[] | null>,
     CACHE_TTL_NEWS_MS
   );
+  const { recordRead, topCategories, hasHistory } = useReadHistory();
+
+  const handleArticleClick = (item: NewsItem) => {
+    recordRead(item.category);
+    onArticleClick(item);
+  };
 
   const featuredStory = newsData.find(item => item.featured) ?? newsData[0];
   const combinedNews = [...(liveNews ?? []), ...newsData];
 
+  const top = topCategories();
+
   const filteredNews = combinedNews.filter(item => {
-    if (item.featured && selectedCategory === 'Feed') return false;
-    if (selectedCategory === 'Feed') return item.category !== 'GEAR';
+    if (selectedCategory === 'Feed') {
+      return !item.featured && item.category !== 'GEAR';
+    }
+    if (selectedCategory === 'For You') {
+      const topThree = top.slice(0, 3);
+      return topThree.length > 0 && topThree.includes(item.category);
+    }
     if (selectedCategory === 'Tech') return item.category === 'TECH' || item.category === 'AI INTEL';
     if (selectedCategory === 'Gaming') return item.category === 'GAMING';
     if (selectedCategory === 'AI') return item.category === 'AI INTEL';
     return true;
   });
+
+  // For "For You", sort by how frequently the user reads each category
+  const displayNews = selectedCategory === 'For You' && top.length > 0
+    ? [...filteredNews].sort((a, b) => {
+        const aScore = top.indexOf(a.category);
+        const bScore = top.indexOf(b.category);
+        return (aScore === -1 ? 999 : aScore) - (bScore === -1 ? 999 : bScore);
+      })
+    : filteredNews;
+
+  const showForYouEmpty = selectedCategory === 'For You' && !hasHistory;
 
   return (
     <motion.div
@@ -78,7 +103,7 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
                 {featuredStory.summary}
               </p>
               <button
-                onClick={() => onArticleClick(featuredStory)}
+                onClick={() => handleArticleClick(featuredStory)}
                 className="bg-primary text-on-primary px-8 py-3 rounded-full font-label font-bold text-sm tracking-wide active:scale-95 transition-all neon-glow hover:scale-105"
               >
                 READ ARTICLE
@@ -107,7 +132,12 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
               selectedCategory === cat ? 'bg-primary text-on-primary neon-glow' : 'bg-surface text-on-surface-variant hover:bg-surface-bright'
             }`}
           >
-            {cat}
+            {cat === 'For You' ? (
+              <span className="flex items-center gap-1.5">
+                <Sparkles size={10} aria-hidden="true" />
+                {cat}
+              </span>
+            ) : cat}
           </button>
         ))}
       </div>
@@ -116,7 +146,7 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <h3 className="font-headline text-xs font-black tracking-[0.3em] text-primary uppercase border-l-4 border-primary pl-4">
-            LATEST TRANSMISSIONS
+            {selectedCategory === 'For You' ? 'YOUR FEED' : 'LATEST TRANSMISSIONS'}
           </h3>
           <button
             onClick={() => { refresh(); onToast('Fetching live intel...', 'info'); }}
@@ -129,14 +159,13 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
           </button>
         </div>
 
-        {/* Live news loading state — show skeletons instead of a single spinner */}
+        {/* Live news loading state */}
         {loadingLive && (
           <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
 
-        {/* Loading status pill */}
         {loadingLive && (
           <div
             className="p-3 border border-primary/20 rounded-xl bg-primary/5 flex items-center gap-3"
@@ -148,14 +177,24 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
           </div>
         )}
 
+        {/* For You empty state */}
+        {showForYouEmpty && (
+          <div className="flex flex-col items-center gap-4 py-16 text-center">
+            <Sparkles size={32} className="text-primary/30" aria-hidden="true" />
+            <p className="font-headline text-sm uppercase tracking-[0.2em] text-on-surface-variant/50">
+              Read a few articles to unlock your personalised feed
+            </p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-6">
-          {filteredNews.map((item) => (
+          {displayNews.map((item) => (
             <div
               key={item.id}
-              onClick={() => onArticleClick(item)}
+              onClick={() => handleArticleClick(item)}
               role="article"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && onArticleClick(item)}
+              onKeyDown={(e) => e.key === 'Enter' && handleArticleClick(item)}
               aria-label={item.title}
               className={`glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row group cursor-pointer hover:scale-[1.01] transition-all duration-300 active:scale-95 ${item.live ? 'border-l-2 border-primary' : ''}`}
             >

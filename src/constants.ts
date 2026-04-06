@@ -13,13 +13,17 @@ export const CACHE_KEYS = {
 } as const;
 
 export const BOOKMARK_KEY = 'kinetic_bookmarks';
+export const STREAK_KEY = 'kinetic_streak';
+export const STREAK_DATE_KEY = 'kinetic_streak_date';
+export const HYPE_KEY = 'kinetic_hype';
+export const READ_HISTORY_KEY = 'kinetic_read_history';
 
 export const ERROR_MESSAGES = {
   SIGNAL_JAMMED: 'SIGNAL JAMMED: RE-ESTABLISHING KINETIC PULSE...',
   NEURAL_RECHARGING: 'NEURAL LINK RECHARGING...',
 } as const;
 
-export const FEED_CATEGORIES = ['Feed', 'Tech', 'Gaming', 'AI'] as const;
+export const FEED_CATEGORIES = ['Feed', 'For You', 'Tech', 'Gaming', 'AI'] as const;
 export const GEAR_BRANDS = ['All Labs', 'Razer', 'Corsair', 'Logitech G', 'SteelSeries'] as const;
 
 export const GAME_URLS = {
