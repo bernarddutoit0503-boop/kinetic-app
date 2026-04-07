@@ -2,6 +2,7 @@ import { TrendingUp, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
 import { useHype } from '../../hooks/useHype';
+import { useAuth } from '../../context/AuthContext';
 import { getLiveServiceEvents } from '../../services/GeminiService';
 import { LiveEvents, GameEvent } from '../../types';
 import { CACHE_KEYS, GAME_URLS, CACHE_TTL_EVENTS_MS, GAME_EVENT_FALLBACKS } from '../../constants';
@@ -120,13 +121,14 @@ const GameCard = ({ title, event, image, playUrl, infoUrl, loading, hypeCount, o
 // ── Main view ──────────────────────────────────────────────────────────────
 
 export const HubView = () => {
+  const { user } = useAuth();
   const { data: liveEvents, loading } = useCachedData<LiveEvents>(
     CACHE_KEYS.LIVE_EVENTS,
     CACHE_KEYS.LIVE_EVENTS_TIME,
     getLiveServiceEvents as () => Promise<LiveEvents | null>,
     CACHE_TTL_EVENTS_MS
   );
-  const { addHype, getHype } = useHype();
+  const { addHype, getHype } = useHype(user?.id ?? null);
 
   const d2 = resolveEvent(liveEvents?.destiny2, GAME_EVENT_FALLBACKS.destiny2);
 

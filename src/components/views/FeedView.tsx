@@ -3,6 +3,7 @@ import { ArrowRight, TrendingUp, RotateCcw, Bookmark, BookmarkCheck, Sparkles } 
 import { motion } from 'motion/react';
 import { useCachedData } from '../../hooks/useCachedData';
 import { useReadHistory } from '../../hooks/useReadHistory';
+import { useAuth } from '../../context/AuthContext';
 import { getLiveNews } from '../../services/GeminiService';
 import { newsData, NewsItem } from '../../data/news';
 import { LiveInsight } from '../LiveInsight';
@@ -21,13 +22,14 @@ interface FeedViewProps {
 
 export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToast }: FeedViewProps) => {
   const [selectedCategory, setSelectedCategory] = useState('Feed');
+  const { user } = useAuth();
   const { data: liveNews, loading: loadingLive, refresh } = useCachedData<NewsItem[]>(
     CACHE_KEYS.LIVE_NEWS,
     CACHE_KEYS.LIVE_NEWS_TIME,
     getLiveNews as () => Promise<NewsItem[] | null>,
     CACHE_TTL_NEWS_MS
   );
-  const { recordRead, topCategories, hasHistory } = useReadHistory();
+  const { recordRead, topCategories, hasHistory } = useReadHistory(user?.id ?? null);
 
   const handleArticleClick = (item: NewsItem) => {
     recordRead(item.category);

@@ -6,11 +6,13 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ArticleModal } from './components/ArticleModal';
 import { SearchOverlay } from './components/SearchOverlay';
 import { ToastContainer } from './components/ToastContainer';
+import { AuthModal } from './components/AuthModal';
 import { FeedView } from './components/views/FeedView';
 import { AIView } from './components/views/AIView';
 import { GearView } from './components/views/GearView';
 import { HubView } from './components/views/HubView';
 import { BookmarksView } from './components/views/BookmarksView';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useToast } from './hooks/useToast';
 import { getLiveServiceEvents } from './services/GeminiService';
@@ -18,14 +20,37 @@ import { Screen } from './types';
 import { NewsItem } from './data/news';
 import { CACHE_KEYS, CACHE_TTL_EVENTS_MS } from './constants';
 
-export default function App() {
+// Auth prompt: show once per session if user is not signed in
+const AUTH_PROMPT_KEY = 'kinetic_auth_prompted';
+
+function AppInner() {
+  const { user, loading: authLoading } = useAuth();
   const [screen, setScreen] = useState<Screen>('feed');
   const [activeArticle, setActiveArticle] = useState<NewsItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { bookmarks, isBookmarked, toggle: toggleBookmarkRaw } = useBookmarks();
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { bookmarks, isBookmarked, toggle: toggleBookmarkRaw } = useBookmarks(user?.id ?? null);
   const { toasts, toast, dismiss } = useToast();
 
-  // Wrap bookmark toggle so it fires a toast from anywhere (feed cards, gear cards, modal)
+  // Show auth modal once per session if not signed in
+  useEffect(() => {
+    if (authLoading) return;
+    if (user) return;
+    const alreadyPrompted = sessionStorage.getItem(AUTH_PROMPT_KEY);
+    if (!alreadyPrompted) {
+      const timer = setTimeout(() => {
+        setIsAuthOpen(true);
+        sessionStorage.setItem(AUTH_PROMPT_KEY, '1');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading, user]);
+
+  // Close auth modal when user successfully signs in
+  useEffect(() => {
+    if (user) setIsAuthOpen(false);
+  }, [user]);
+
   const toggleBookmark = (id: string) => {
     const wasSaved = isBookmarked(id);
     toggleBookmarkRaw(id);
@@ -57,7 +82,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen pb-24">
-      <Header onSearchClick={() => setIsSearchOpen(true)} />
+      <Header
+        onSearchClick={() => setIsSearchOpen(true)}
+        onAuthClick={() => setIsAuthOpen(true)}
+      />
 
       <main className="pt-20 px-4 max-w-2xl mx-auto">
         <ErrorBoundary>
@@ -128,8 +156,23 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Auth modal */}
+      <AnimatePresence>
+        {isAuthOpen && (
+          <AuthModal key="auth-modal" onClose={() => setIsAuthOpen(false)} />
+        )}
+      </AnimatePresence>
+
       {/* Toast notifications */}
       <ToastContainer toasts={toasts} dismiss={dismiss} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppInner />
+    </AuthProvider>
   );
 }
