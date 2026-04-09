@@ -24,7 +24,13 @@ export const GearView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Gea
     CACHE_TTL_NEWS_MS
   );
 
-  const gearItems = [...(liveNews ?? []), ...newsData].filter(item => item.category === 'GEAR');
+  // Live-first: deduplicate and prioritize live news over static
+  const liveIds = new Set((liveNews ?? []).map(n => n.id));
+  const uniqueStatic = newsData.filter(n => !liveIds.has(n.id));
+  const allNews = liveNews && liveNews.length > 0
+    ? [...liveNews, ...uniqueStatic]
+    : [...newsData];
+  const gearItems = allNews.filter(item => item.category === 'GEAR');
   const filteredGear = selectedBrand === 'All Labs'
     ? gearItems
     : gearItems.filter(item => (

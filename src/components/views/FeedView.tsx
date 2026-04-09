@@ -36,8 +36,22 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
     onArticleClick(item);
   };
 
-  const featuredStory = newsData.find(item => item.featured) ?? newsData[0];
-  const combinedNews = [...(liveNews ?? []), ...newsData];
+  // Live news is the primary source; static newsData is fallback only
+  const hasLiveNews = liveNews && liveNews.length > 0;
+
+  // Featured story: prefer first live item, fall back to static featured
+  const featuredStory = hasLiveNews
+    ? liveNews[0]
+    : (newsData.find(item => item.featured) ?? newsData[0]);
+
+  // Deduplicate: if we have live news, only add static items that aren't duplicated
+  const liveIds = new Set((liveNews ?? []).map(n => n.id));
+  const uniqueStatic = newsData.filter(n => !liveIds.has(n.id));
+
+  // Live-first: show all live news, then append static as backfill
+  const combinedNews = hasLiveNews
+    ? [...liveNews, ...uniqueStatic]
+    : [...newsData];
 
   const top = topCategories();
 

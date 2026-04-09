@@ -14,10 +14,10 @@ function getAllNews(): NewsItem[] {
   try {
     const cached = localStorage.getItem(CACHE_KEYS.LIVE_NEWS);
     const live: NewsItem[] = cached ? JSON.parse(cached) : [];
-    // Deduplicate by id in case live news overlaps with static
-    const seen = new Set(newsData.map(n => n.id));
-    const uniqueLive = live.filter(n => !seen.has(n.id));
-    return [...uniqueLive, ...newsData];
+    // Live-first: deduplicate and prioritize live news
+    const liveIds = new Set(live.map(n => n.id));
+    const uniqueStatic = newsData.filter(n => !liveIds.has(n.id));
+    return live.length > 0 ? [...live, ...uniqueStatic] : [...newsData];
   } catch {
     return [...newsData];
   }

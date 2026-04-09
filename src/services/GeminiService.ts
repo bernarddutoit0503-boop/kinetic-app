@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { ERROR_MESSAGES } from "../constants";
+import { ERROR_MESSAGES, LIVE_NEWS_COUNT } from "../constants";
 import { LiveEvents } from "../types";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -51,8 +51,9 @@ export async function getKineticInsights(topic: string): Promise<string | null> 
   }
 }
 
-/** Live news — returns top 5 items. Cached 30 min by useCachedData.
+/** Live news — returns top articles. Cached 30 min by useCachedData.
  *  Prompt is trimmed to the minimum needed for correct JSON output.
+ *  Count is controlled by LIVE_NEWS_COUNT (default 15).
  */
 export async function getLiveNews(): Promise<unknown[] | null> {
   try {
@@ -61,9 +62,10 @@ export async function getLiveNews(): Promise<unknown[] | null> {
 
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
-      contents: `Return ONLY a JSON array (no markdown) of the 5 biggest tech/gaming/AI news items from ${today}.
-Sources: The Verge, TechCrunch, IGN, Polygon, Bungie.net, Kineticgames.co.uk.${aprilFools ? '\nSkip April Fools jokes — real news only.' : ''}
-Each object: {"id":"kebab-id","category":"TECH|GAMING|AI INTEL|GEAR","source_brand":"...","title":"...","original_url":"...","image":"url-or-unsplash","publish_date":"${today}","summary":"one sentence","smart_summary":"one-line gamer/tech benefit hook"}`,
+      contents: `Return ONLY a JSON array (no markdown) of the ${LIVE_NEWS_COUNT} biggest tech/gaming/AI/hardware news items from ${today}.
+Sources: The Verge, TechCrunch, IGN, Polygon, Ars Technica, Wired, Tom's Hardware, PC Gamer, GameSpot, Bungie.net, Kineticgames.co.uk.${aprilFools ? '\nSkip April Fools jokes — real news only.' : ''}
+Include a mix of categories: at least 3 TECH, 3 GAMING, 3 AI INTEL, and 2 GEAR items.
+Each object: {"id":"kebab-id","category":"TECH|GAMING|AI INTEL|GEAR","source_brand":"...","title":"...","original_url":"...","image":"url-or-unsplash","publish_date":"${today}","summary":"one sentence","smart_summary":"one-line gamer/tech benefit hook","live":true}`,
       config: {
         tools: [{ googleSearch: {} }],
       },

@@ -1,5 +1,6 @@
 export const CACHE_TTL_MS = 60 * 60 * 1000;            // 60 min (default)
 export const CACHE_TTL_NEWS_MS = 30 * 60 * 1000;       // 30 min — live news refreshes more often
+export const LIVE_NEWS_COUNT = 15;                      // fetch 15 live articles (up from 5)
 export const CACHE_TTL_EVENTS_MS = 6 * 60 * 60 * 1000; // 6 hr  — game events are stable
 export const CACHE_TTL_INSIGHTS_MS = 4 * 60 * 60 * 1000; // 4 hr — insights don't change fast
 
