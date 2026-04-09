@@ -1,12 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CACHE_TTL_MS } from '../constants';
 
+/** Check if a timestamp is from a previous calendar day */
+function isFromPreviousDay(timestamp: number): boolean {
+  const cached = new Date(timestamp);
+  const now = new Date();
+  return cached.toDateString() !== now.toDateString();
+}
+
 function readCache<T>(cacheKey: string, timestampKey: string, ttl: number): T | null {
   try {
     const cached = localStorage.getItem(cacheKey);
     const lastFetch = localStorage.getItem(timestampKey);
-    if (cached && lastFetch && (Date.now() - parseInt(lastFetch)) < ttl) {
-      return JSON.parse(cached) as T;
+    if (cached && lastFetch) {
+      const fetchTime = parseInt(lastFetch);
+      // Invalidate if TTL expired OR if cached data is from a previous day
+      // This ensures users always get fresh news when they open the app on a new day
+      if ((Date.now() - fetchTime) < ttl && !isFromPreviousDay(fetchTime)) {
+        return JSON.parse(cached) as T;
+      }
     }
   } catch {
     // ignore parse errors from corrupt cache

@@ -15,10 +15,10 @@ import { BookmarksView } from './components/views/BookmarksView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useBookmarks } from './hooks/useBookmarks';
 import { useToast } from './hooks/useToast';
-import { getLiveServiceEvents } from './services/GeminiService';
+import { getLiveServiceEvents, getLiveNews } from './services/GeminiService';
 import { Screen } from './types';
 import { NewsItem } from './data/news';
-import { CACHE_KEYS, CACHE_TTL_EVENTS_MS } from './constants';
+import { CACHE_KEYS, CACHE_TTL_EVENTS_MS, CACHE_TTL_NEWS_MS } from './constants';
 
 // Auth prompt: show once per session if user is not signed in
 const AUTH_PROMPT_KEY = 'kinetic_auth_prompted';
@@ -62,13 +62,34 @@ function AppInner() {
     window.scrollTo(0, 0);
   }, [screen]);
 
-  // Background prefetch: warm up Hub events cache 2 s after load
+  // Background prefetch: warm up news + Hub events caches on load
   useEffect(() => {
+    /** Check if cached data is stale (expired TTL or from a previous day) */
+    const isStale = (cacheKey: string, timeKey: string, ttl: number) => {
+      const cached = localStorage.getItem(cacheKey);
+      const lastFetch = localStorage.getItem(timeKey);
+      if (!cached || !lastFetch) return true;
+      const fetchTime = parseInt(lastFetch);
+      // Stale if TTL expired OR if data is from a previous calendar day
+      if (Date.now() - fetchTime >= ttl) return true;
+      const cachedDate = new Date(fetchTime).toDateString();
+      const today = new Date().toDateString();
+      return cachedDate !== today;
+    };
+
+    // Prefetch live news immediately if stale (ensures fresh daily content)
+    if (isStale(CACHE_KEYS.LIVE_NEWS, CACHE_KEYS.LIVE_NEWS_TIME, CACHE_TTL_NEWS_MS)) {
+      getLiveNews().then(data => {
+        if (data) {
+          localStorage.setItem(CACHE_KEYS.LIVE_NEWS, JSON.stringify(data));
+          localStorage.setItem(CACHE_KEYS.LIVE_NEWS_TIME, Date.now().toString());
+        }
+      });
+    }
+
+    // Prefetch Hub events 2s later (lower priority)
     const timer = setTimeout(() => {
-      const cached = localStorage.getItem(CACHE_KEYS.LIVE_EVENTS);
-      const lastFetch = localStorage.getItem(CACHE_KEYS.LIVE_EVENTS_TIME);
-      const isFresh = cached && lastFetch && (Date.now() - parseInt(lastFetch)) < CACHE_TTL_EVENTS_MS;
-      if (!isFresh) {
+      if (isStale(CACHE_KEYS.LIVE_EVENTS, CACHE_KEYS.LIVE_EVENTS_TIME, CACHE_TTL_EVENTS_MS)) {
         getLiveServiceEvents().then(data => {
           if (data) {
             localStorage.setItem(CACHE_KEYS.LIVE_EVENTS, JSON.stringify(data));
