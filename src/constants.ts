@@ -40,6 +40,12 @@ export const GAME_URLS = {
   FOR_HONOR_STORE: 'https://store.steampowered.com/app/304390/For_Honor/',
   DOTA2: 'https://www.dota2.com/home',
   DOTA2_STORE: 'https://store.steampowered.com/app/570/Dota_2/',
+  HELLDIVERS2: 'https://www.helldivers.com/',
+  HELLDIVERS2_STORE: 'https://store.steampowered.com/app/553850/HELLDIVERS_2/',
+  MARVEL_RIVALS: 'https://www.marvelrivals.com/en/',
+  MARVEL_RIVALS_STORE: 'https://store.steampowered.com/app/2767030/Marvel_Rivals/',
+  POE2: 'https://www.pathofexile2.com/',
+  POE2_STORE: 'https://store.steampowered.com/app/2694490/Path_of_Exile_2/',
   RAZER_HUNTSMAN: 'https://www.razer.com/gaming-keyboards/razer-huntsman-v3-pro', // full V3 Pro, not mini
 } as const;
 
@@ -74,5 +80,20 @@ export const GAME_EVENT_FALLBACKS = {
     event_name: 'Crownfall Act IV',
     description: 'The final act of Crownfall brings new hero arcanas, treasure caches, and a 7.37 balance patch.',
     subtitle: 'Battle Pass Event',
+  },
+  helldivers2: {
+    event_name: 'Galactic War: Major Order',
+    description: 'Helldivers are deployed across the galaxy to defend Super Earth. Complete the active Major Order for community-wide rewards.',
+    subtitle: 'Major Order',
+  },
+  marvelrivals: {
+    event_name: 'Current Ranked Season',
+    description: 'A new hero, map, and competitive split are live — climb the ranked ladder before the season locks in.',
+    subtitle: 'Ranked Season',
+  },
+  poe2: {
+    event_name: 'Current Endgame League',
+    description: 'The current three-month league introduces a new mechanic, boss fight, and economy reset — prime time for a fresh build.',
+    subtitle: 'New League',
   },
 } as const;

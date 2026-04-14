@@ -69,16 +69,17 @@ export async function getLiveNews(): Promise<unknown[] | null> {
 }
 
 /** Live game events — cached 6 hours by useCachedData (events don't change often).
- *  Covers: Destiny 2, Phasmophobia, The Isle, Rainbow Six Siege, For Honor, Dota 2.
+ *  Covers: Destiny 2, Phasmophobia, The Isle, Rainbow Six Siege, For Honor, Dota 2,
+ *  Helldivers 2, Marvel Rivals, Path of Exile 2.
  */
 export async function getLiveServiceEvents(): Promise<LiveEvents | null> {
   try {
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
-      contents: `Return ONLY a JSON object (no markdown) with the current active in-game events for these 6 live-service games. Search each game's official site or Steam news page.
-Games: Destiny 2 (Bungie.net), Phasmophobia (kineticgames.co.uk), The Isle (theisle-game.com), Rainbow Six Siege (ubisoft.com), For Honor (ubisoft.com), Dota 2 (dota2.com).
+      contents: `Return ONLY a JSON object (no markdown) with the current active in-game events for these 9 live-service games. Search each game's official site or Steam news page.
+Games: Destiny 2 (Bungie.net), Phasmophobia (kineticgames.co.uk), The Isle (theisle-game.com), Rainbow Six Siege (ubisoft.com), For Honor (ubisoft.com), Dota 2 (dota2.com), Helldivers 2 (helldivers.com — current Major Order / Galactic War state), Marvel Rivals (marvelrivals.com — current ranked season + any live event), Path of Exile 2 (pathofexile2.com — current league name + headline mechanic).
 Format exactly:
-{"destiny2":{"event_name":"...","description":"1-2 sentences player-benefit focused","subtitle":"2-3 words"},"phasmophobia":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"theisle":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"rainbow6siege":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"forhonor":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"dota2":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"}}`,
+{"destiny2":{"event_name":"...","description":"1-2 sentences player-benefit focused","subtitle":"2-3 words"},"phasmophobia":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"theisle":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"rainbow6siege":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"forhonor":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"dota2":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"helldivers2":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"marvelrivals":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"},"poe2":{"event_name":"...","description":"1-2 sentences","subtitle":"2-3 words"}}`,
       config: {
         tools: [{ googleSearch: {} }],
       },
