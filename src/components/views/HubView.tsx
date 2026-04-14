@@ -183,6 +183,36 @@ export const HubView = () => {
       loading,
       accent: 'primary' as const,
     },
+    {
+      gameKey: 'helldivers2',
+      title: 'Helldivers 2',
+      event: resolveEvent(liveEvents?.helldivers2, GAME_EVENT_FALLBACKS.helldivers2),
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/553850/library_hero.jpg',
+      playUrl: GAME_URLS.HELLDIVERS2_STORE,
+      infoUrl: GAME_URLS.HELLDIVERS2,
+      loading,
+      accent: 'primary' as const,
+    },
+    {
+      gameKey: 'marvelrivals',
+      title: 'Marvel Rivals',
+      event: resolveEvent(liveEvents?.marvelrivals, GAME_EVENT_FALLBACKS.marvelrivals),
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/2767030/library_hero.jpg',
+      playUrl: GAME_URLS.MARVEL_RIVALS_STORE,
+      infoUrl: GAME_URLS.MARVEL_RIVALS,
+      loading,
+      accent: 'secondary' as const,
+    },
+    {
+      gameKey: 'poe2',
+      title: 'Path of Exile 2',
+      event: resolveEvent(liveEvents?.poe2, GAME_EVENT_FALLBACKS.poe2),
+      image: 'https://cdn.cloudflare.steamstatic.com/steam/apps/2694490/library_hero.jpg',
+      playUrl: GAME_URLS.POE2_STORE,
+      infoUrl: GAME_URLS.POE2,
+      loading,
+      accent: 'tertiary' as const,
+    },
   ];
 
   // Most hyped games float to the top

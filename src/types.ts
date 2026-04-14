@@ -13,4 +13,7 @@ export interface LiveEvents {
   rainbow6siege: GameEvent;
   forhonor: GameEvent;
   dota2: GameEvent;
+  helldivers2: GameEvent;
+  marvelrivals: GameEvent;
+  poe2: GameEvent;
 }
