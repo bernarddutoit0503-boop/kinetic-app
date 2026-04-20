@@ -7,6 +7,8 @@ import { ArticleModal } from './components/ArticleModal';
 import { SearchOverlay } from './components/SearchOverlay';
 import { ToastContainer } from './components/ToastContainer';
 import { AuthModal } from './components/AuthModal';
+import { LegalModal } from './components/LegalModal';
+import { Footer } from './components/Footer';
 import { FeedView } from './components/views/FeedView';
 import { AIView } from './components/views/AIView';
 import { GearView } from './components/views/GearView';
@@ -29,6 +31,7 @@ function AppInner() {
   const [activeArticle, setActiveArticle] = useState<NewsItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
   const { bookmarks, isBookmarked, toggle: toggleBookmarkRaw } = useBookmarks(user?.id ?? null);
   const { toasts, toast, dismiss } = useToast();
 
@@ -141,6 +144,8 @@ function AppInner() {
             )}
           </AnimatePresence>
         </ErrorBoundary>
+
+        <Footer onLegalClick={() => setIsLegalOpen(true)} />
       </main>
 
       <BottomNav
@@ -181,6 +186,13 @@ function AppInner() {
       <AnimatePresence>
         {isAuthOpen && (
           <AuthModal key="auth-modal" onClose={() => setIsAuthOpen(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Legal / disclaimer modal */}
+      <AnimatePresence>
+        {isLegalOpen && (
+          <LegalModal key="legal-modal" onClose={() => setIsLegalOpen(false)} />
         )}
       </AnimatePresence>
 
