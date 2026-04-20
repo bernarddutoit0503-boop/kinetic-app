@@ -74,11 +74,31 @@ function stripHtml(s: string): string {
   return s
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
+    // Numeric entities — decimal (&#8217;) and hex (&#x2019;). Must run before
+    // &amp; expansion so we don't double-decode anything.
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+      const code = parseInt(hex, 16);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : '';
+    })
+    .replace(/&#(\d+);/g, (_, dec) => {
+      const code = parseInt(dec, 10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : '';
+    })
+    // Common named entities. &amp; must be last so sequences like &amp;#8217;
+    // that arrived double-encoded get normalised correctly on subsequent
+    // passes if they ever appear.
     .replace(/&quot;/g, '"')
-    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lsquo;/g, '\u2018')
+    .replace(/&rsquo;/g, '\u2019')
+    .replace(/&ldquo;/g, '\u201C')
+    .replace(/&rdquo;/g, '\u201D')
+    .replace(/&ndash;/g, '\u2013')
+    .replace(/&mdash;/g, '\u2014')
+    .replace(/&hellip;/g, '\u2026')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim();
 }
