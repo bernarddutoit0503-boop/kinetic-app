@@ -24,7 +24,7 @@ export const ERROR_MESSAGES = {
   NEURAL_RECHARGING: 'NEURAL LINK RECHARGING...',
 } as const;
 
-export const FEED_CATEGORIES = ['Feed', 'For You', 'Tech', 'Gaming', 'AI'] as const;
+export const FEED_CATEGORIES = ['Feed', 'For You', 'Tech', 'Gaming', 'AI', 'Entertainment'] as const;
 export const GEAR_BRANDS = ['All Labs', 'Razer', 'Corsair', 'Logitech G', 'SteelSeries'] as const;
 
 export const GAME_URLS = {
