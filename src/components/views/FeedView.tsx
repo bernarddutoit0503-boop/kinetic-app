@@ -66,6 +66,7 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
     if (selectedCategory === 'Tech') return item.category === 'TECH' || item.category === 'AI INTEL';
     if (selectedCategory === 'Gaming') return item.category === 'GAMING';
     if (selectedCategory === 'AI') return item.category === 'AI INTEL';
+    if (selectedCategory === 'Entertainment') return item.category === 'ENTERTAINMENT';
     return true;
   });
 

@@ -1,21 +1,55 @@
+import { useMemo } from 'react';
 import { ArrowRight, TrendingUp, TrendingDown, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useCachedData } from '../../hooks/useCachedData';
+import { getLiveNews } from '../../services/GeminiService';
+import { NewsItem } from '../../data/news';
+import { CACHE_KEYS, CACHE_TTL_NEWS_MS } from '../../constants';
 
-// ── Types ──────────────────────────────────────────────────────────────────
+// ── Company classification ────────────────────────────────────────────────
+// AI INTEL items are bucketed into company sections via title regex. Order
+// matters: more specific patterns (Anthropic, Claude) run before general ones
+// (Google, Meta) so a "Claude beats Gemini" headline lands in the right bucket.
 
-interface QuickBriefItem {
+type Company = 'OpenAI' | 'Anthropic' | 'Meta AI' | 'Google DeepMind' | 'Other';
+
+type Accent = 'primary' | 'secondary' | 'tertiary';
+
+interface CompanyConfig {
+  name: Exclude<Company, 'Other'>;
+  pattern: RegExp;
+  accent: Accent;
+}
+
+const COMPANIES: CompanyConfig[] = [
+  { name: 'Anthropic', pattern: /\b(Anthropic|Claude)\b/i, accent: 'primary' },
+  { name: 'OpenAI', pattern: /\b(OpenAI|GPT-?[0-9]|ChatGPT|Sora|DALL-?E)\b/i, accent: 'secondary' },
+  { name: 'Meta AI', pattern: /\b(Meta|Llama)\b/i, accent: 'tertiary' },
+  { name: 'Google DeepMind', pattern: /\b(Google|DeepMind|Gemini|Bard|Gemma|Genie)\b/i, accent: 'secondary' },
+];
+
+const GAMING_AI_KW = /\b(game|gaming|NPC|Ubisoft|NVIDIA ACE|Valve|Xbox|Nintendo|PlayStation|Unreal|Unity)\b/i;
+
+function detectCompany(title: string): Company {
+  for (const c of COMPANIES) if (c.pattern.test(title)) return c.name;
+  return 'Other';
+}
+
+const ACCENT_CYCLE: Accent[] = ['secondary', 'primary', 'tertiary'];
+
+// ── Quick brief card (compact row) ─────────────────────────────────────────
+
+interface QuickBriefProps {
   key?: string | number;
   tag: string;
   company: string;
   title: string;
   meta: string;
   url: string;
-  accent: 'primary' | 'secondary' | 'tertiary';
+  accent: Accent;
 }
 
-// ── Quick brief card (compact row) ─────────────────────────────────────────
-
-const QuickBrief = ({ tag, company, title, meta, url, accent }: QuickBriefItem) => {
+const QuickBrief = ({ tag, company, title, meta, url, accent }: QuickBriefProps) => {
   const tagClass = {
     primary: 'bg-primary/20 text-primary',
     secondary: 'bg-secondary/20 text-secondary',
@@ -67,7 +101,10 @@ interface FeatureCardProps {
 }
 
 const FeatureCard = ({ tags, title, body, image, imageAlt, url, accentColor = 'secondary' }: FeatureCardProps) => (
-  <div className={`group relative bg-surface-variant rounded-2xl overflow-hidden border border-outline-variant/10 hover:border-${accentColor}/30 transition-all duration-500`}>
+  <button
+    onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
+    className={`block w-full text-left group relative bg-surface-variant rounded-2xl overflow-hidden border border-outline-variant/10 hover:border-${accentColor}/30 transition-all duration-500 active:scale-[0.995]`}
+  >
     <div className="aspect-[16/9] overflow-hidden">
       <img
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -85,257 +122,263 @@ const FeatureCard = ({ tags, title, body, image, imageAlt, url, accentColor = 's
       <h4 className={`font-headline text-3xl font-bold mb-4 leading-tight group-hover:text-${accentColor} transition-colors`}>
         {title}
       </h4>
-      <p className="text-on-surface-variant mb-8 font-body text-lg leading-relaxed">{body}</p>
-      <button
-        onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
-        className={`flex items-center gap-2 font-label text-xs font-black uppercase tracking-widest text-${accentColor} group/btn`}
-      >
-        Full Coverage <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" aria-hidden="true" />
-      </button>
+      <p className="text-on-surface-variant mb-8 font-body text-lg leading-relaxed line-clamp-3">{body}</p>
+      <span className={`flex items-center gap-2 font-label text-xs font-black uppercase tracking-widest text-${accentColor}`}>
+        Full Coverage <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+      </span>
     </div>
+  </button>
+);
+
+// ── Empty-state placeholder ────────────────────────────────────────────────
+
+const EmptyCard = ({ name }: { name: string }) => (
+  <div className="rounded-2xl border border-dashed border-outline-variant/20 p-8 text-center bg-surface-variant/30">
+    <p className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+      No recent {name} intel — check back soon.
+    </p>
   </div>
+);
+
+// ── Sidebar row (Gemini + AI in Gaming) ─────────────────────────────────────
+
+interface SidebarRowProps {
+  key?: string | number;
+  title: string;
+  meta: string;
+  url: string;
+  image: string;
+}
+
+const SidebarRow = ({ title, meta, url, image }: SidebarRowProps) => (
+  <button
+    onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
+    className="flex gap-4 group text-left w-full active:scale-[0.98] transition-transform"
+  >
+    <div className="w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-surface-bright">
+      <img
+        className="w-full h-full object-cover"
+        src={image}
+        alt=""
+        aria-hidden="true"
+        referrerPolicy="no-referrer"
+      />
+    </div>
+    <div className="flex flex-col justify-center min-w-0">
+      <h6 className="font-headline text-sm font-bold leading-tight group-hover:text-secondary transition-colors mb-1 line-clamp-2">{title}</h6>
+      <span className="font-label text-[9px] text-on-surface-variant uppercase truncate">{meta}</span>
+    </div>
+  </button>
 );
 
 // ── Main view ──────────────────────────────────────────────────────────────
 
-const QUICK_BRIEFS: QuickBriefItem[] = [
-  {
-    tag: 'Agents',
-    company: 'OpenAI',
-    title: 'Operator can now browse, book & purchase autonomously',
-    meta: '2h ago',
-    url: 'https://openai.com/operator',
-    accent: 'secondary',
-  },
-  {
-    tag: 'On-Device',
-    company: 'Apple',
-    title: 'Apple Intelligence Private Cloud Compute opens to researchers',
-    meta: '5h ago',
-    url: 'https://security.apple.com/blog/private-cloud-compute/',
-    accent: 'primary',
-  },
-  {
-    tag: 'Open Source',
-    company: 'Meta AI',
-    title: 'Llama 4 Scout: 17B active params, 109B total — beats GPT-4o on reasoning',
-    meta: '1d ago',
-    url: 'https://llama.meta.com/',
-    accent: 'tertiary',
-  },
-  {
-    tag: 'Coding',
-    company: 'Microsoft',
-    title: 'GitHub Copilot Workspace goes GA — full repo editing via chat',
-    meta: '1d ago',
-    url: 'https://githubnext.com/projects/copilot-workspace',
-    accent: 'secondary',
-  },
-  {
-    tag: 'Gaming AI',
-    company: 'Ubisoft',
-    title: 'NEO NPC: LLM-driven characters with persistent memory ship in Resurgence',
-    meta: '2d ago',
-    url: 'https://news.ubisoft.com/',
-    accent: 'primary',
-  },
-  {
-    tag: 'Robotics',
-    company: 'Google DeepMind',
-    title: 'ALOHA Unleashed learns dexterous tasks from 1 human demo in under a minute',
-    meta: '3d ago',
-    url: 'https://deepmind.google/discover/blog/',
-    accent: 'tertiary',
-  },
-];
+export const AIView = () => {
+  // Reuse the same LIVE_NEWS cache as FeedView — no extra fetch.
+  const { data: allNews, loading } = useCachedData<NewsItem[]>(
+    CACHE_KEYS.LIVE_NEWS,
+    CACHE_KEYS.LIVE_NEWS_TIME,
+    getLiveNews as () => Promise<NewsItem[] | null>,
+    CACHE_TTL_NEWS_MS,
+  );
 
-export const AIView = () => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 1.05 }}
-    className="space-y-12"
-  >
-    {/* ── Hero banner ── */}
-    <section className="relative overflow-hidden rounded-2xl p-8 lg:p-12 border border-secondary/10">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-background to-background" />
-        <img
-          className="w-full h-full object-cover opacity-30 mix-blend-overlay"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuA96w3YAloDO3A30Ghjxk1S39M9OeNeXqtiskRp2xgXpzCz_4OZ2VliObse-N3eVkCA_eOCvmFHSCpQYS7-pmGq7qFpspl6sr4F1Zoz1WMI5QZYkiJUJTbu-SjTBfAHKA3uNFJ_aAfIXSPPXY5nAHwOqv8idDStGSOzkKIElcZVCYENKsesb7lwQnNbivtsZ0pnRDo5xukl3sXgwDRGHdC706ABj0JTMBIPThPWnUZ1Qk0CokpRR-07qTsuewCBAKSX4PyLsnCSMg"
-          alt=""
-          aria-hidden="true"
-          referrerPolicy="no-referrer"
-        />
-      </div>
-      <div className="relative z-10 max-w-2xl">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse" aria-hidden="true" />
-          <span className="font-label text-[10px] uppercase tracking-[0.2em] text-secondary font-bold">Volume 42 • Edition 08</span>
-        </div>
-        <h2 className="font-headline text-5xl lg:text-7xl font-bold tracking-tighter text-on-surface mb-6 leading-none">
-          AI <span className="text-secondary italic">WEEKLY</span>
-        </h2>
-        <p className="text-on-surface-variant text-lg lg:text-xl max-w-md mb-8 leading-relaxed">
-          Decoding the intelligence explosion. Frontier models hit the physical world, agents go autonomous, and gaming AI gets a permanent upgrade.
-        </p>
-      </div>
-    </section>
+  const aiNews = useMemo(
+    () => (allNews ?? []).filter(n => n.category === 'AI INTEL'),
+    [allNews],
+  );
 
-    {/* ── Quick briefs ── */}
-    <div className="space-y-4">
-      <h3 className="font-headline text-xs font-black tracking-[0.3em] text-primary uppercase border-l-4 border-primary pl-4">
-        RAPID INTEL
-      </h3>
-      <div className="space-y-2">
-        {QUICK_BRIEFS.map(brief => (
-          <QuickBrief key={brief.title} {...brief} />
-        ))}
-      </div>
-    </div>
+  const byCompany = useMemo(() => {
+    const map: Record<Company, NewsItem[]> = {
+      OpenAI: [],
+      Anthropic: [],
+      'Meta AI': [],
+      'Google DeepMind': [],
+      Other: [],
+    };
+    for (const n of aiNews) map[detectCompany(n.title)].push(n);
+    return map;
+  }, [aiNews]);
 
-    {/* ── Main two-col grid ── */}
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+  const rapidIntel = aiNews.slice(0, 6);
+  const gamingAI = useMemo(
+    () => aiNews.filter(n => GAMING_AI_KW.test(n.title)).slice(0, 3),
+    [aiNews],
+  );
+  const geminiItems = byCompany['Google DeepMind'].slice(0, 3);
 
-      {/* LEFT — feature articles */}
-      <div className="lg:col-span-8 space-y-10">
+  const noData = !loading && aiNews.length === 0;
 
-        {/* OpenAI */}
-        <div className="space-y-6">
-          <SectionHeader name="OPENAI" count="3 UPDATES" />
-          <FeatureCard
-            tags={['Reasoning', 'Breaking']}
-            title="GPT-5: The Dawn of Recursive Reasoners"
-            body="Leaked internal benchmarks suggest GPT-5 hits 98% on the Mercury reasoning suite, effectively eliminating hallucination in logical syllogisms. A step-change above o3 in structured tasks."
-            image="https://lh3.googleusercontent.com/aida-public/AB6AXuCh-dPKUTSQRh3S7j-ZsjzNqMatrVUI0vV62dfeocwtgAIkiZxYGanvFq6oG8_CUmmbJ8yvUFCNCsmhPrbIY40YPqY8G8HW6TexoCLbhO1n5bO2X24TH1Mf-4OsTaHwxGoObd5GgGXkcLHN-mLpGKU01xrzhLc6R1-nDV1UqOUNWth-M5at4-1OOwZ8N7IWZ5GG_p2sN4bubgzjmzo2LluTU-5QnPtUmK4ixpaJB78IKhxbwi-4nj6uiFsilWp9Ibo5KxXcuswcQA"
-            imageAlt="GPT-5 article"
-            url="https://openai.com/blog"
-            accentColor="secondary"
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.05 }}
+      className="space-y-12"
+    >
+      {/* ── Hero banner ── */}
+      <section className="relative overflow-hidden rounded-2xl p-8 lg:p-12 border border-secondary/10">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-background to-background" />
+          <img
+            className="w-full h-full object-cover opacity-30 mix-blend-overlay"
+            src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop"
+            alt=""
+            aria-hidden="true"
+            referrerPolicy="no-referrer"
           />
         </div>
-
-        {/* Anthropic */}
-        <div className="space-y-6">
-          <SectionHeader name="ANTHROPIC" count="2 UPDATES" color="primary" />
-          <FeatureCard
-            tags={['Extended Thinking', 'Coding']}
-            title="Claude 3.7 Sonnet: Hybrid Reasoning on Demand"
-            body="Claude 3.7 Sonnet's hybrid reasoning mode lets it toggle between near-instant replies and deep chain-of-thought depending on task complexity — producing state-of-the-art results on SWE-bench with 62.3% solve rate."
-            image="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&auto=format&fit=crop"
-            imageAlt="Claude 3.7 Sonnet"
-            url="https://www.anthropic.com/claude/sonnet"
-            accentColor="primary"
-          />
+        <div className="relative z-10 max-w-2xl">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="inline-block w-2 h-2 bg-primary rounded-full animate-pulse" aria-hidden="true" />
+            <span className="font-label text-[10px] uppercase tracking-[0.2em] text-secondary font-bold">
+              {loading ? 'SCANNING INTEL...' : `${aiNews.length} LIVE SIGNAL${aiNews.length === 1 ? '' : 'S'}`}
+            </span>
+          </div>
+          <h2 className="font-headline text-5xl lg:text-7xl font-bold tracking-tighter text-on-surface mb-6 leading-none">
+            AI <span className="text-secondary italic">WEEKLY</span>
+          </h2>
+          <p className="text-on-surface-variant text-lg lg:text-xl max-w-md mb-8 leading-relaxed">
+            Decoding the intelligence explosion. Frontier models, autonomous agents, and gaming AI — all pulled live from the feed.
+          </p>
         </div>
+      </section>
 
-        {/* Meta */}
-        <div className="space-y-6">
-          <SectionHeader name="META AI" count="2 UPDATES" color="tertiary" />
-          <FeatureCard
-            tags={['Open Source', 'Multimodal']}
-            title="Llama 4: Mixture-of-Experts Goes Open Weight"
-            body="Meta's Llama 4 Scout deploys 17B active parameters from a 109B total MoE architecture, delivering GPT-4o-class performance in an open-weight package that runs on a single H100 for inference."
-            image="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop"
-            imageAlt="Llama 4 meta"
-            url="https://llama.meta.com/"
-            accentColor="tertiary"
-          />
-        </div>
-
-        {/* Google DeepMind */}
-        <div className="space-y-6">
-          <SectionHeader name="GOOGLE DEEPMIND" count="3 UPDATES" color="secondary" />
-          <FeatureCard
-            tags={['World Models', 'Gaming']}
-            title="Genie 2: Infinite Playable Worlds from a Single Image"
-            body="Genie 2 generates fully playable, physics-consistent 3D environments from a single prompt image at interactive frame rates. Indie studios could prototype full game worlds in seconds rather than months."
-            image="https://images.unsplash.com/photo-1614332287897-cdc485fa562d?w=800&auto=format&fit=crop"
-            imageAlt="Genie 2 world model"
-            url="https://deepmind.google/discover/blog/"
-            accentColor="secondary"
-          />
+      {/* ── Rapid briefs ── */}
+      <div className="space-y-4">
+        <h3 className="font-headline text-xs font-black tracking-[0.3em] text-primary uppercase border-l-4 border-primary pl-4">
+          RAPID INTEL
+        </h3>
+        {loading && rapidIntel.length === 0 && (
+          <div className="space-y-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-16 rounded-xl bg-surface animate-pulse" aria-hidden="true" />
+            ))}
+          </div>
+        )}
+        {noData && <EmptyCard name="AI" />}
+        <div className="space-y-2">
+          {rapidIntel.map((item, i) => (
+            <QuickBrief
+              key={item.id}
+              tag={detectCompany(item.title).split(' ')[0]}
+              company={item.source_brand ?? 'Feed'}
+              title={item.title}
+              meta={item.publish_date ?? 'Recent'}
+              url={item.original_url ?? '#'}
+              accent={ACCENT_CYCLE[i % 3]}
+            />
+          ))}
         </div>
       </div>
 
-      {/* RIGHT — sidebar */}
-      <div className="lg:col-span-4 space-y-10">
+      {/* ── Main two-col grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-        {/* Google Gemini sidebar */}
-        <div className="space-y-6">
-          <h3 className="font-headline text-xl font-bold tracking-tight border-b border-outline-variant/30 pb-4">GOOGLE GEMINI</h3>
-          <div className="flex flex-col gap-5">
-            {[
-              { title: 'Gemini 2.5 Pro hits 2M token context', meta: '1h ago • Infrastructure', url: 'https://deepmind.google/technologies/gemini/' },
-              { title: 'Gemini Live adds real-time screen sharing', meta: '4h ago • Mobile', url: 'https://deepmind.google/technologies/gemini/' },
-              { title: 'NotebookLM Audio Overviews go multilingual', meta: '1d ago • Productivity', url: 'https://notebooklm.google.com/' },
-            ].map(item => (
-              <button
-                key={item.title}
-                onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}
-                className="flex gap-4 group text-left"
-              >
-                <div className="w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-surface-bright">
-                  <img
-                    className="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZLeW1TlEGtC4PRYKpW5YPpK8ZgW0wfq2grp6lRuWwA34qO6kXbwmsRylNBpvOeFmZEmTvoEOYIBt1TtjRocj6gbbTWgPQIS7NhSakUCgmx7UROK8UM5jQY4heDIklxuxN5Mb8FbZrtaS-v8YxiCmQjpIsN5mBfwcbq3hUlCc3VETvPS7aSjXtEGmZKYMrcKS0huJ1Rh_G_zBsupZfJsKptiZaoPKD4eb8LwFj7wkSJcFvew21Yqe7f8G-eNGkEopZnekC1-6mJA"
-                    alt=""
-                    aria-hidden="true"
-                    referrerPolicy="no-referrer"
+        {/* LEFT — feature articles per company */}
+        <div className="lg:col-span-8 space-y-10">
+          {COMPANIES.map(({ name, accent }) => {
+            const items = byCompany[name];
+            const headline = items[0];
+            return (
+              <div key={name} className="space-y-6">
+                <SectionHeader
+                  name={name.toUpperCase()}
+                  count={`${items.length} UPDATE${items.length === 1 ? '' : 'S'}`}
+                  color={accent}
+                />
+                {headline ? (
+                  <FeatureCard
+                    tags={[name, 'LIVE']}
+                    title={headline.title}
+                    body={headline.summary}
+                    image={headline.image}
+                    imageAlt={headline.title}
+                    url={headline.original_url ?? '#'}
+                    accentColor={accent}
                   />
-                </div>
-                <div className="flex flex-col justify-center">
-                  <h6 className="font-headline text-sm font-bold leading-tight group-hover:text-secondary transition-colors mb-1">{item.title}</h6>
-                  <span className="font-label text-[9px] text-on-surface-variant uppercase">{item.meta}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* AI in Gaming sidebar */}
-        <div className="space-y-4">
-          <h3 className="font-headline text-xl font-bold tracking-tight border-b border-outline-variant/30 pb-4">AI IN GAMING</h3>
-          <div className="flex flex-col gap-3">
-            {[
-              { co: 'NVIDIA', title: 'ACE NPCs debut in AAA title — 30ms response time', tag: 'DLSS 4' },
-              { co: 'Valve', title: 'Steam AI Game Detector flags 1,200 titles in 30 days', tag: 'Policy' },
-              { co: 'Xbox', title: 'DirectML 2.0 brings on-device AI to Game Bar', tag: 'Tools' },
-            ].map(item => (
-              <div key={item.title} className="flex items-start gap-3 p-3 bg-surface rounded-lg border border-outline-variant/5">
-                <span className="font-label text-[8px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded shrink-0">{item.tag}</span>
-                <div>
-                  <p className="font-label text-[8px] text-on-surface-variant uppercase mb-0.5">{item.co}</p>
-                  <p className="font-headline text-xs font-bold leading-tight text-on-surface">{item.title}</p>
-                </div>
+                ) : (
+                  <EmptyCard name={name} />
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
 
-        {/* Market intel */}
-        <div className="bg-surface-variant rounded-2xl p-6 border-l-4 border-primary shadow-xl">
-          <h4 className="font-label text-[10px] font-black tracking-widest text-primary uppercase mb-6">Market Intel</h4>
+        {/* RIGHT — sidebar */}
+        <div className="lg:col-span-4 space-y-10">
+
+          {/* Google Gemini sidebar */}
+          <div className="space-y-6">
+            <h3 className="font-headline text-xl font-bold tracking-tight border-b border-outline-variant/30 pb-4">GOOGLE GEMINI</h3>
+            {geminiItems.length === 0 ? (
+              <EmptyCard name="Gemini" />
+            ) : (
+              <div className="flex flex-col gap-5">
+                {geminiItems.map(item => (
+                  <SidebarRow
+                    key={item.id}
+                    title={item.title}
+                    meta={`${item.publish_date ?? 'Recent'} • ${item.source_brand ?? 'Feed'}`}
+                    url={item.original_url ?? '#'}
+                    image={item.image}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* AI in Gaming sidebar */}
           <div className="space-y-4">
-            {[
-              { ticker: 'NVIDIA', val: '+4.2%', up: true },
-              { ticker: 'MSFT', val: '+1.8%', up: true },
-              { ticker: 'META', val: '+3.1%', up: true },
-              { ticker: 'GOOGLE', val: '-0.5%', up: false },
-              { ticker: 'AMD', val: '+2.4%', up: true },
-            ].map(row => (
-              <div key={row.ticker} className="flex justify-between items-center">
-                <span className="text-on-surface-variant text-xs font-label uppercase">{row.ticker}</span>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs font-bold ${row.up ? 'text-primary' : 'text-error'}`}>{row.val}</span>
-                  {row.up
-                    ? <TrendingUp size={14} className="text-primary" aria-hidden="true" />
-                    : <TrendingDown size={14} className="text-error" aria-hidden="true" />}
-                </div>
+            <h3 className="font-headline text-xl font-bold tracking-tight border-b border-outline-variant/30 pb-4">AI IN GAMING</h3>
+            {gamingAI.length === 0 ? (
+              <EmptyCard name="Gaming AI" />
+            ) : (
+              <div className="flex flex-col gap-3">
+                {gamingAI.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => window.open(item.original_url ?? '#', '_blank', 'noopener,noreferrer')}
+                    className="flex items-start gap-3 p-3 bg-surface rounded-lg border border-outline-variant/5 text-left hover:border-primary/20 transition-colors active:scale-[0.98]"
+                  >
+                    <span className="font-label text-[8px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded shrink-0">LIVE</span>
+                    <div className="min-w-0">
+                      <p className="font-label text-[8px] text-on-surface-variant uppercase mb-0.5 truncate">{item.source_brand ?? 'Feed'}</p>
+                      <p className="font-headline text-xs font-bold leading-tight text-on-surface line-clamp-2">{item.title}</p>
+                    </div>
+                  </button>
+                ))}
               </div>
-            ))}
+            )}
+          </div>
+
+          {/* Market intel — static, no RSS source for stock prices */}
+          <div className="bg-surface-variant rounded-2xl p-6 border-l-4 border-primary shadow-xl">
+            <div className="flex items-center justify-between mb-6">
+              <h4 className="font-label text-[10px] font-black tracking-widest text-primary uppercase">Market Intel</h4>
+              <span className="font-label text-[8px] text-on-surface-variant/60 uppercase tracking-widest">Indicative</span>
+            </div>
+            <div className="space-y-4">
+              {[
+                { ticker: 'NVIDIA', val: '+4.2%', up: true },
+                { ticker: 'MSFT', val: '+1.8%', up: true },
+                { ticker: 'META', val: '+3.1%', up: true },
+                { ticker: 'GOOGLE', val: '-0.5%', up: false },
+                { ticker: 'AMD', val: '+2.4%', up: true },
+              ].map(row => (
+                <div key={row.ticker} className="flex justify-between items-center">
+                  <span className="text-on-surface-variant text-xs font-label uppercase">{row.ticker}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold ${row.up ? 'text-primary' : 'text-error'}`}>{row.val}</span>
+                    {row.up
+                      ? <TrendingUp size={14} className="text-primary" aria-hidden="true" />
+                      : <TrendingDown size={14} className="text-error" aria-hidden="true" />}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
