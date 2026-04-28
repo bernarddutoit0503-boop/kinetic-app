@@ -37,6 +37,36 @@ function detectCompany(title: string): Company {
 
 const ACCENT_CYCLE: Accent[] = ['secondary', 'primary', 'tertiary'];
 
+const accentClasses: Record<Accent, {
+  bg: string;
+  borderHover: string;
+  text: string;
+  tag: string;
+  groupText: string;
+}> = {
+  primary: {
+    bg: 'bg-primary',
+    borderHover: 'hover:border-primary/30',
+    text: 'text-primary',
+    tag: 'bg-primary/20 text-primary',
+    groupText: 'group-hover:text-primary',
+  },
+  secondary: {
+    bg: 'bg-secondary',
+    borderHover: 'hover:border-secondary/30',
+    text: 'text-secondary',
+    tag: 'bg-secondary/20 text-secondary',
+    groupText: 'group-hover:text-secondary',
+  },
+  tertiary: {
+    bg: 'bg-tertiary',
+    borderHover: 'hover:border-tertiary/30',
+    text: 'text-tertiary',
+    tag: 'bg-tertiary/20 text-tertiary',
+    groupText: 'group-hover:text-tertiary',
+  },
+};
+
 // ── Quick brief card (compact row) ─────────────────────────────────────────
 
 interface QuickBriefProps {
@@ -78,10 +108,10 @@ const QuickBrief = ({ tag, company, title, meta, url, accent }: QuickBriefProps)
 
 // ── Company section header ──────────────────────────────────────────────────
 
-const SectionHeader = ({ name, count, color = 'secondary' }: { name: string; count: string; color?: string }) => (
+const SectionHeader = ({ name, count, color = 'secondary' }: { name: string; count: string; color?: Accent }) => (
   <div className="flex items-end justify-between border-b border-outline-variant/30 pb-4">
     <h3 className="font-headline text-2xl font-bold tracking-tight flex items-center gap-3">
-      <span className={`w-1 h-8 bg-${color}`} aria-hidden="true" />
+      <span className={`w-1 h-8 ${accentClasses[color].bg}`} aria-hidden="true" />
       {name}
     </h3>
     <span className="font-label text-xs text-on-surface-variant">{count}</span>
@@ -97,13 +127,16 @@ interface FeatureCardProps {
   image: string;
   imageAlt: string;
   url: string;
-  accentColor?: string;
+  accentColor?: Accent;
 }
 
-const FeatureCard = ({ tags, title, body, image, imageAlt, url, accentColor = 'secondary' }: FeatureCardProps) => (
+const FeatureCard = ({ tags, title, body, image, imageAlt, url, accentColor = 'secondary' }: FeatureCardProps) => {
+  const accent = accentClasses[accentColor];
+
+  return (
   <button
     onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}
-    className={`block w-full text-left group relative bg-surface-variant rounded-2xl overflow-hidden border border-outline-variant/10 hover:border-${accentColor}/30 transition-all duration-500 active:scale-[0.995]`}
+    className={`block w-full text-left group relative bg-surface-variant rounded-2xl overflow-hidden border border-outline-variant/10 ${accent.borderHover} transition-all duration-500 active:scale-[0.995]`}
   >
     <div className="aspect-[16/9] overflow-hidden">
       <img
@@ -116,19 +149,20 @@ const FeatureCard = ({ tags, title, body, image, imageAlt, url, accentColor = 's
     <div className="p-8">
       <div className="flex gap-2 mb-4 flex-wrap">
         {tags.map(t => (
-          <span key={t} className={`px-3 py-1 bg-${accentColor}/20 text-${accentColor} rounded-full font-label text-[10px] font-bold uppercase`}>{t}</span>
+          <span key={t} className={`px-3 py-1 ${accent.tag} rounded-full font-label text-[10px] font-bold uppercase`}>{t}</span>
         ))}
       </div>
-      <h4 className={`font-headline text-3xl font-bold mb-4 leading-tight group-hover:text-${accentColor} transition-colors`}>
+      <h4 className={`font-headline text-3xl font-bold mb-4 leading-tight ${accent.groupText} transition-colors`}>
         {title}
       </h4>
       <p className="text-on-surface-variant mb-8 font-body text-lg leading-relaxed line-clamp-3">{body}</p>
-      <span className={`flex items-center gap-2 font-label text-xs font-black uppercase tracking-widest text-${accentColor}`}>
+      <span className={`flex items-center gap-2 font-label text-xs font-black uppercase tracking-widest ${accent.text}`}>
         Full Coverage <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
       </span>
     </div>
   </button>
-);
+  );
+};
 
 // ── Empty-state placeholder ────────────────────────────────────────────────
 

@@ -37,6 +37,7 @@ export const GearView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Gea
         item.brand === selectedBrand ||
         item.source_brand?.toLowerCase().includes(selectedBrand.toLowerCase())
       ));
+  const featuredGear = newsData.find(item => item.id === 'razer-huntsman-v3');
 
   return (
     <motion.div
@@ -45,20 +46,20 @@ export const GearView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Gea
       exit={{ opacity: 0, x: -50 }}
       className="space-y-16"
     >
-      <section className="relative group overflow-hidden rounded-xl bg-surface border border-outline-variant/10">
+      <section className="relative group overflow-hidden rounded-xl bg-surface border border-outline-variant/10 h-[600px]">
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
         <img
-          className="w-full h-[500px] object-cover scale-105 group-hover:scale-100 transition-transform duration-700"
+          className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700"
           src="/assets/gear/huntsman.jpg"
           alt="Razer Huntsman V3 Pro"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute bottom-0 left-0 z-20 p-8 md:p-12 w-full md:w-2/3">
+        <div className="absolute inset-y-0 left-0 z-20 p-8 md:p-12 w-full md:w-2/3 flex flex-col justify-center">
           <div className="inline-flex items-center gap-2 mb-4">
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse" aria-hidden="true"></span>
             <span className="font-label text-xs font-bold uppercase tracking-[0.2em] text-primary">Hardware of the Week</span>
           </div>
-          <h1 className="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-tight mb-6">
+          <h1 className="font-headline text-3xl md:text-4xl font-extrabold tracking-tighter leading-tight mb-6 max-w-xl">
             RAZER HUNTSMAN V3 PRO: THE OPTICAL EVOLUTION.
           </h1>
           <p className="text-on-surface-variant text-lg md:text-xl max-w-xl mb-8 leading-relaxed">
@@ -71,7 +72,10 @@ export const GearView = ({ onArticleClick, isBookmarked, onBookmarkToggle }: Gea
             >
               Deep Dive Specs
             </button>
-            <button className="glass-panel border border-outline-variant/30 text-on-surface px-8 py-4 rounded-full font-label font-bold uppercase tracking-widest text-xs active:scale-95 transition-all">
+            <button
+              onClick={() => featuredGear && onArticleClick(featuredGear)}
+              className="glass-panel border border-outline-variant/30 text-on-surface px-8 py-4 rounded-full font-label font-bold uppercase tracking-widest text-xs active:scale-95 transition-all"
+            >
               View Gallery
             </button>
           </div>

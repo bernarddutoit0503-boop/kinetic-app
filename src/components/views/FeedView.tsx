@@ -111,10 +111,8 @@ export const FeedView = ({ onArticleClick, isBookmarked, onBookmarkToggle, onToa
                   Live
                 </span>
               </div>
-              <h2 className="font-headline text-4xl font-bold leading-[0.95] tracking-tighter text-on-surface">
-                {featuredStory.title.split(':').map((part, i) => (
-                  <span key={i}>{part}{i === 0 && <br/>}<span className="text-primary italic">{i === 1 && part}</span></span>
-                ))}
+              <h2 className="font-headline text-3xl md:text-4xl font-bold leading-tight tracking-tighter text-on-surface max-w-[92%]">
+                {featuredStory.title}
               </h2>
               <p className="text-on-surface-variant line-clamp-2 font-body text-lg leading-relaxed max-w-[90%]">
                 {featuredStory.summary}

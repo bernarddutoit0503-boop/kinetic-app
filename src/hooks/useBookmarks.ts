@@ -35,17 +35,18 @@ export function useBookmarks(userId: string | null) {
       return;
     }
 
-    // Optimistic update + DB write
-    setBookmarks(prev => {
-      const exists = prev.includes(id);
-      if (exists) {
-        supabase.from('bookmarks').delete().eq('user_id', userId).eq('article_id', id);
-      } else {
-        supabase.from('bookmarks').insert({ user_id: userId, article_id: id });
-      }
-      return exists ? prev.filter(b => b !== id) : [...prev, id];
-    });
-  }, [userId]);
+    const exists = bookmarks.includes(id);
+    const { error } = exists
+      ? await supabase.from('bookmarks').delete().eq('user_id', userId).eq('article_id', id)
+      : await supabase.from('bookmarks').insert({ user_id: userId, article_id: id });
+
+    if (error) {
+      console.error('Bookmark sync failed:', error);
+      return;
+    }
+
+    setBookmarks(prev => exists ? prev.filter(b => b !== id) : [...prev, id]);
+  }, [bookmarks, userId]);
 
   const isBookmarked = useCallback((id: string) => bookmarks.includes(id), [bookmarks]);
 

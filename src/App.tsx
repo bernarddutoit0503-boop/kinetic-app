@@ -26,7 +26,7 @@ import { CACHE_KEYS, CACHE_TTL_EVENTS_MS, CACHE_TTL_NEWS_MS } from './constants'
 const AUTH_PROMPT_KEY = 'kinetic_auth_prompted';
 
 function AppInner() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [screen, setScreen] = useState<Screen>('feed');
   const [activeArticle, setActiveArticle] = useState<NewsItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -35,19 +35,11 @@ function AppInner() {
   const { bookmarks, isBookmarked, toggle: toggleBookmarkRaw } = useBookmarks(user?.id ?? null);
   const { toasts, toast, dismiss } = useToast();
 
-  // Show auth modal once per session if not signed in
+  // Do not interrupt first-time visitors with an automatic auth wall. The
+  // modal still opens from the header sign-in action.
   useEffect(() => {
-    if (authLoading) return;
-    if (user) return;
-    const alreadyPrompted = sessionStorage.getItem(AUTH_PROMPT_KEY);
-    if (!alreadyPrompted) {
-      const timer = setTimeout(() => {
-        setIsAuthOpen(true);
-        sessionStorage.setItem(AUTH_PROMPT_KEY, '1');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [authLoading, user]);
+    if (!user) sessionStorage.setItem(AUTH_PROMPT_KEY, '1');
+  }, [user]);
 
   // Close auth modal when user successfully signs in
   useEffect(() => {
